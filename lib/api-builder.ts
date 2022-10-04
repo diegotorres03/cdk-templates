@@ -8,7 +8,8 @@ import {
     aws_s3 as S3,
     aws_s3_deployment as S3Deployment,
     RemovalPolicy,
-    CfnOutput
+    CfnOutput,
+    Duration
 } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -34,42 +35,12 @@ export class ApiBuilderStack extends Stack {
     // private codeBucket: S3.bucket
 
     constructor(scope: Construct, id: string, props?: StackProps) {
-        super(scope, id, props);
-
-        // const api = this.createApi('name')
-
-
-
-
-        // api.get('/users/{id}', function run() {
-        //     // pre handler handler 
-        //     const aws = require('aws-sdk')
-        //     console.log('pre handler')
-        //     // @ts-ignore
-        //     exports.handler = async function (event, context) {
-        //         // your code here
-        //         console.log('asdadkjasdjhasdkjhaskjdhkajshdkasjdhk')
-        //         console.log(JSON.stringify(event, undefined, 2));
-        //         return {
-        //             statusCode: 200,
-        //             body: JSON.stringify([{ id: 'user1' }, { id: 'user2' },]),
-        //             headers: {
-        //                 'Content-type': 'application/json',
-        //                 'Access-Controll-Allow-Origins': '*',
-        //             }
-        //         }
-        //     };
-        // }, {
-        //     layers: [],
-        //     env: {}, name: 'getUser',
-        //     authorizer: null
-        // })
-
-
+        super(scope, id, props)
     }
 
 
     createApi(apiName: string) {
+        console.log('creating api <(*.*<)')
         let method = null
         let path = null
         const api = new ApiGateway.RestApi(this, apiName, {
@@ -85,7 +56,11 @@ export class ApiBuilderStack extends Stack {
             },
         })
 
+
+        const apiUrl = new CfnOutput(this, 'apiUrl', { value: api.url })
+
         const requestHandler = (method: string) => (path: string, lambdaCode: Function, options: any) => {
+            console.log(`creating ${method} <(*.*<)`)
 
 
             const lambda = this.createLambda(lambdaCode, options)
@@ -93,6 +68,7 @@ export class ApiBuilderStack extends Stack {
             if (Array.isArray(options.layers))
                 options.layers.forEach((layer: Lambda.LayerVersion) => lambda.addLayers(layer))
 
+            console.log('adding path', path)
 
             api.root.resourceForPath(path)
                 // api.root.addResource(path)
@@ -121,27 +97,62 @@ export class ApiBuilderStack extends Stack {
     }
 
     /**
-     * 
+     * original location api-builder.ts
+     * @author Diego Torres <diegotorres@easyarchery.net>
+     * @version 1.0.0
      * @param {LambdaDef} LambdaDef 
      * @returns 
      */
-    createLambda(functionCode: Function, options: { name: string, env: any, access: Function[], vpc: EC2.Vpc }) {
+    createLambda(functionCode: Function, options: {
+        name: string, env: any, access: Function[], vpc: EC2.Vpc, securityGroupIds: string[]
+    }) {
         if (!options.name) throw new Error('name is required')
 
         let vpc = undefined
-        if(options.vpc) vpc = options.vpc as EC2.Vpc
-        
+        let sgs = undefined
+        if (options.vpc) {
+            vpc = options.vpc as EC2.Vpc
+            sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG', 'default', options.vpc)]
+            //  sgs = Array.isArray(options.securityGroupIds) ? options.securityGroupIds
+            //     .map(sgId => EC2.SecurityGroup.fromSecurityGroupId(this, 'sgid', sgId)) : []
+            console.log('sgids', options.securityGroupIds)
+            console.log(sgs)
+        }
 
-        const code = `(${functionCode.toString()})()`
 
-        const lambda = new Lambda.Function(this, options.name, {
+        const functionCodeStr = functionCode.toString()
+        let code = undefined
+
+        if (functionCodeStr.includes('exports.handler = ')) {
+            console.log('full function')
+            code = `(${functionCodeStr})()`
+        } else {
+            console.log('handler function')
+            code = `(function() {
+                exports.handler = ${functionCodeStr}
+            })()`
+            console.log(code)
+        }
+
+        const lambdaParams = {
             runtime: Lambda.Runtime.NODEJS_16_X,
             code: Lambda.Code.fromInline(code),
+            timeout: Duration.minutes(1),
             // code: Lambda.Code.fromAsset(lambdaDef.path),
+            allowPublicSubnet: vpc ? true : undefined,
+            securityGroups: sgs,
             handler: 'index.handler',
-            // vpc,
+            vpc,
             environment: { ...options.env }
-        })
+        }
+
+
+        // console.log('\n\nlambda params')
+        // console.log(lambdaParams)
+
+        const lambda = new Lambda.Function(this, options.name, lambdaParams)
+
+
 
         if (options && Array.isArray(options.access)) {
             options.access.forEach(fn => fn(lambda))

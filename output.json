@@ -1,12 +1,19 @@
 {
+  "daxapiindexeddbwebapp275A991A": {
+    "distributionId": "E3E0NTFXCBDITD",
+    "webappDnsUrl": "d1umfamq31ktt8.cloudfront.net",
+    "webappBucketName": "daxapiindexeddbwebapp275a9-webappartifact89ba74f3-1inskni38hrlf"
+  },
   "tables": {
-    "ExportsOutputReftestTableFD9E855749AFC11D": "tables-testTableFD9E8557-14I4R88UEBRMS",
-    "ExportsOutputFnGetAttDaxClusterClusterDiscoveryEndpointURL6A1D0ED4": "dax://daxclus-8xeznixkkg3f.fwyleo.dax-clusters.us-east-2.amazonaws.com",
-    "ExportsOutputFnGetAtttestTableFD9E8557ArnD31980C7": "arn:aws:dynamodb:us-east-2:778599875342:table/tables-testTableFD9E8557-14I4R88UEBRMS",
-    "tableName": "tables-testTableFD9E8557-14I4R88UEBRMS",
-    "daxEndpoint": "dax://daxclus-8xeznixkkg3f.fwyleo.dax-clusters.us-east-2.amazonaws.com"
+    "ExportsOutputReftestTableFD9E855749AFC11D": "tables-testTableFD9E8557-3L1FKKZT00EW",
+    "ExportsOutputFnGetAttDaxClusterClusterDiscoveryEndpointURL6A1D0ED4": "dax://daxclus-dg0efghkpewm.fwyleo.dax-clusters.us-east-2.amazonaws.com",
+    "ExportsOutputFnGetAtttestTableFD9E8557ArnD31980C7": "arn:aws:dynamodb:us-east-2:778599875342:table/tables-testTableFD9E8557-3L1FKKZT00EW",
+    "tableName": "tables-testTableFD9E8557-3L1FKKZT00EW",
+    "daxEndpoint": "dax://daxclus-dg0efghkpewm.fwyleo.dax-clusters.us-east-2.amazonaws.com",
+    "ExportsOutputFnGetAttDaxClusterArn25D296B1": "arn:aws:dax:us-east-2:778599875342:cache/daxclus-dg0efghkpewm"
   },
   "daxapidaxtest9C3C4CFB": {
-    "daxtestEndpoint9A896034": "https://j7zqqqn0ea.execute-api.us-east-2.amazonaws.com/dev/"
+    "daxtestEndpoint9A896034": "https://ekqgn57kme.execute-api.us-east-2.amazonaws.com/dev/",
+    "apiUrl": "https://ekqgn57kme.execute-api.us-east-2.amazonaws.com/dev/"
   }
 }

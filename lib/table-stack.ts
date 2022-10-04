@@ -10,12 +10,15 @@ import {
     //
 } from 'aws-cdk-lib'
 
+import { ApiBuilderStack } from './api-builder'
+
+
 import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs'
 
 interface TablesStackProps extends StackProps {
-    daxSubnetIds: string[] // 	subnet-a66de6cd –	subnet-a65392db –	subnet-055f7749
-    daxSecurityGroupIds: string[] //	sgr-022dc12c5095e64c1
+    daxSubnetIds: string[] // subnet-a66de6cd –	subnet-a65392db – subnet-055f7749
+    daxSecurityGroupIds: string[] // sgr-022dc12c5095e64c1
 }
 
 export class TableStack extends Stack {
@@ -26,9 +29,12 @@ export class TableStack extends Stack {
     constructor(scope: Construct, id: string, props: TablesStackProps) {
         super(scope, id, props);
 
+
+
+
         // [ ] Dynamo table
         this.table = new Dynamo.Table(this, 'testTable', {
-            // tableName: PhysicalName.GENERATE_IF_NEEDED,
+            tableName: PhysicalName.GENERATE_IF_NEEDED,
             billingMode: Dynamo.BillingMode.PAY_PER_REQUEST,
             partitionKey: { name: 'partition', type: Dynamo.AttributeType.STRING },
             sortKey: { name: 'sort', type: Dynamo.AttributeType.STRING },
@@ -74,9 +80,6 @@ export class TableStack extends Stack {
             value: this.daxCache.attrClusterDiscoveryEndpointUrl,
             exportName: 'daxClusterEndpointUrl'
         })
-
-
-
 
     }
 

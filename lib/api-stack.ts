@@ -3,8 +3,10 @@ import {
     aws_dynamodb as Dynamo,
     aws_dax as Dax,
     aws_ec2 as EC2,
+    aws_iam as IAM,
     Fn,
     aws_lambda as Lambda,
+    CfnOutput,
 } from 'aws-cdk-lib'
 
 import { promises as fs } from 'fs'
@@ -12,11 +14,13 @@ import { promises as fs } from 'fs'
 import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs'
 import { ApiBuilderStack } from './api-builder'
+import { WebAppStack, WebappProps } from './webapp-stack'
 
 
 interface ApiStackProps extends StackProps {
     table: Dynamo.Table
     daxCache: Dax.CfnCluster
+    webapp?: string
 }
 
 // const region  = process.env.AWS_REGION || 'us-east-2'
@@ -25,7 +29,7 @@ export class ApiStack extends Stack {
     constructor(scope: Construct, id: string, props: ApiStackProps) {
         super(scope, id, props)
 
-        const apiBuilder = new ApiBuilderStack(this, 'dax-test')
+        const apiBuilder = new ApiBuilderStack(this, 'dax-test', { env: { ...props.env } })
         const api = apiBuilder.createApi('dax-test')
 
         console.log(props.daxCache.attrClusterDiscoveryEndpointUrl)
@@ -36,11 +40,39 @@ export class ApiStack extends Stack {
 
 
         // const defaultVpc = EC2.Vpc.fromLookup(this, 'default-vpc', { vpcId: 'vpc-9cb3d0f7', region: 'us-east-2' })
-        // const defaultVpc = EC2.Vpc.fromLookup(this, 'default-vpc', { isDefault: true, region: this.region })
-        // console.log('defaultVpc', defaultVpc)
+        const defaultVpc = EC2.Vpc.fromLookup(this, 'default-vpc', { isDefault: true })
+        console.log('defaultVpc', defaultVpc)
 
 
         const daxLayer = apiBuilder.createLayer('js-dax-dependencies', './layers/dax')
+
+
+
+        /**
+         * 
+         * @api {GET} /path getasdasd
+         * @apiName apiName
+         * @apiGroup group
+         * @apiVersion  1.0.patch
+         * 
+         * 
+         * @apiParam  {String} paramName description
+         * 
+         * @apiSuccess (200) {type} name description
+         * 
+         * @apiParamExample  {type} Request-Example:
+         * {
+         *     property : value
+         * }
+         * 
+         * 
+         * @apiSuccessExample {type} Success-Response:
+         * {
+         *     property : value
+         * }
+         * 
+         * 
+         */
         api.post('/data', function () {
             // post to dynamo
             const aws = require('aws-sdk')
@@ -72,7 +104,7 @@ export class ApiStack extends Stack {
                 TABLE_NAME: props.table.tableName,
             },
             access: [
-                // props.table.grantWriteData,
+                // table.grantWriteData,
                 (fn: Lambda.Function) => props.table.grantWriteData(fn),
             ],
         })
@@ -140,10 +172,27 @@ export class ApiStack extends Stack {
             },
             access: [
                 (fn: Lambda.Function) => props.table.grantReadData(fn),
+                (fn: Lambda.Function) => {
+                    fn.addToRolePolicy(new IAM.PolicyStatement({
+                        actions: ['dax:*'],
+                        effect: IAM.Effect.ALLOW,
+                        resources: [props.daxCache.attrArn],
+                    }))
+                },
             ],
-            // vpc: defaultVpc,
+            vpc: defaultVpc,
+            securityGroupIds: props.daxCache.securityGroupIds
         })
 
+        
+
+        console.log('\n\nprops.daxCache.securityGroupIds\n\n', props.daxCache.securityGroupIds)
+
+        if (props.webapp) {
+            const webapp = new WebAppStack(this, 'indexeddb-webapp', {
+                assetsPath: props.webapp
+            })
+        }
 
     }
 
