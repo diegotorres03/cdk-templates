@@ -1,0 +1,41 @@
+# graphql/schema.graphql
+type Note {
+  id: ID!
+  name: String!
+  completed: Boolean!
+}
+
+type UserItem {
+  userId: ID!
+  itemId: ID!
+  def: String
+}
+
+input NoteInput {
+  id: ID!
+  name: String!
+  completed: Boolean!
+}
+
+input UpdateNoteInput {
+  id: ID!
+  name: String
+  completed: Boolean
+}
+
+type Query {
+  getNoteById(noteId: String!): Note
+  listNotes: [Note]
+  listUserItems: [UserItem]
+}
+
+type Mutation {
+  createNote(note: NoteInput!): Note
+  updateNote(note: UpdateNoteInput!): Note
+  deleteNote(noteId: String!): String
+}
+
+type Subscription {
+  onCreateNote(id:ID): Note
+  @aws_subscribe(mutations:["createNote"])
+}

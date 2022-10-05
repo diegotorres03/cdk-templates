@@ -1,0 +1,528 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+
+  ResourceNamePrefix:
+    Default: AppSyncTutorial-
+    Description: Prefix for the names of the resources created by this template. This includes, DynamoDB tables, Cognito User Pool, and AppSync API names.
+    Type: String
+    MinLength: 0
+    MaxLength: 30
+    AllowedPattern: '^[a-zA-Z][a-zA-Z0-9-_]*$'
+
+  UserPoolUsername:
+    Description: Cognito UserPool username used in the Tutorial.
+    Default: nadia
+    Type: String
+    MinLength: 0
+    MaxLength: 20
+    AllowedPattern: '^[a-zA-Z][a-zA-Z0-9-_]*$'
+
+  UserPoolUserEmail:
+    Description: Cognito user email where the temporary password will be sent. Please enter a valid and working email.
+    Type: String
+    MinLength: 1
+
+Resources:
+
+  ############################
+  # AWS AppSync API          #
+  ############################
+
+  AppSyncPipelineApi:
+    Type: AWS::AppSync::GraphQLApi
+    Properties:
+      Name:
+        Fn::Sub: "${ResourceNamePrefix}PicturesViewer"
+      AuthenticationType: AMAZON_COGNITO_USER_POOLS
+      UserPoolConfig:
+        UserPoolId:
+          Ref: UserPool
+        AwsRegion:
+          Ref: AWS::Region
+        DefaultAction: DENY
+
+  GraphQLSchema:
+    Type: "AWS::AppSync::GraphQLSchema"
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - AppSyncPipelineApi
+        - ApiId
+      Definition: |
+        schema {
+            query: Query
+            mutation: Mutation
+        }
+
+        type Mutation {
+            createPicture(input: CreatePictureInput!): Picture!
+            @aws_auth(cognito_groups: ["Admins"])
+            createFriendship(id: ID!, target: ID!): Boolean
+            @aws_auth(cognito_groups: ["Admins"])
+        }
+
+        type Query {
+            getPicturesByOwner(id: ID!): [Picture]
+            @aws_auth(cognito_groups: ["Admins", "Viewers"])
+        }
+
+        type Picture {
+            id: ID!
+            owner: ID!
+            src: String
+        }
+
+        input CreatePictureInput {
+            owner: ID!
+            src: String!
+        }
+
+  ############################
+  # AWS AppSync Datasources  #
+  ############################
+
+  DynamoDBPicturesTableDatasource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      Type: AMAZON_DYNAMODB
+      Name: pictures
+      ApiId:
+        Fn::GetAtt:
+        - "AppSyncPipelineApi"
+        - ApiId
+      ServiceRoleArn: !GetAtt AppSyncTutorialAmazonDynamoDBRole.Arn
+      DynamoDBConfig:
+        TableName:
+          Ref: AppSyncTutorialPicturesTable
+        AwsRegion:
+          Ref: AWS::Region
+        UseCallerCredentials: FALSE
+
+  DynamoDBFriendsTableDatasource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      Type: AMAZON_DYNAMODB
+      Name: friends
+      ApiId:
+        Fn::GetAtt:
+        - "AppSyncPipelineApi"
+        - ApiId
+      ServiceRoleArn: !GetAtt AppSyncTutorialAmazonDynamoDBRole.Arn
+      DynamoDBConfig:
+        TableName:
+          Ref: AppSyncTutorialFriendsTable
+        AwsRegion:
+          Ref: AWS::Region
+        UseCallerCredentials: FALSE
+
+  ############################
+  # AWS AppSync Resolvers    #
+  ############################
+
+  CreatePictureResolver:
+    Type: "AWS::AppSync::Resolver"
+    DependsOn:
+    - GraphQLSchema
+    - DynamoDBPicturesTableDatasource
+    Properties:
+      ApiId: !GetAtt AppSyncPipelineApi.ApiId
+      TypeName: "Mutation"
+      FieldName: "createPicture"
+      DataSourceName: !GetAtt DynamoDBPicturesTableDatasource.Name
+      RequestMappingTemplate: |
+        #set($id = $util.autoId())
+
+        {
+            "version" : "2018-05-29",
+
+            "operation" : "PutItem",
+
+            "key" : {
+                "id" : $util.dynamodb.toDynamoDBJson($id),
+                "owner": $util.dynamodb.toDynamoDBJson($ctx.args.input.owner)
+            },
+
+            "attributeValues" : $util.dynamodb.toMapValuesJson($ctx.args.input)
+        }
+      ResponseMappingTemplate: |
+        #if($ctx.error)
+            $util.error($ctx.error.message, $ctx.error.type)
+        #end
+        $util.toJson($ctx.result)
+
+  CreateFriendshipResolver:
+    Type: "AWS::AppSync::Resolver"
+    DependsOn:
+    - GraphQLSchema
+    - DynamoDBFriendsTableDatasource
+    Properties:
+      ApiId: !GetAtt AppSyncPipelineApi.ApiId
+      TypeName: "Mutation"
+      FieldName: "createFriendship"
+      DataSourceName: !GetAtt DynamoDBFriendsTableDatasource.Name
+      RequestMappingTemplate: !Sub |
+        #set($userToFriendFriendship = { "userId" : "$ctx.args.id", "friendId": "$ctx.args.target" })
+        #set($friendToUserFriendship = { "userId" : "$ctx.args.target", "friendId": "$ctx.args.id" })
+        #set($friendsItems = [$util.dynamodb.toMapValues($userToFriendFriendship), $util.dynamodb.toMapValues($friendToUserFriendship)])
+
+        {
+            "version" : "2018-05-29",
+            "operation" : "BatchPutItem",
+            "tables" : {
+                "${ResourceNamePrefix}Friends": $util.toJson($friendsItems)
+            }
+        }
+      ResponseMappingTemplate: |
+        #if($ctx.error)
+            $util.error($ctx.error.message, $ctx.error.type)
+        #end
+        true
+
+  GetPicturesByOwnerResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId: !GetAtt AppSyncPipelineApi.ApiId
+      TypeName: "Query"
+      FieldName: "getPicturesByOwner"
+      RequestMappingTemplate: |
+        #set($result = { "owner": $ctx.args.id, "callerId": $ctx.identity.username })
+        $util.toJson($result)
+      ResponseMappingTemplate: |
+        #foreach($picture in $ctx.result.items)
+            ## prepend "src://" to picture.src property
+            #set($picture['src'] = "src://${picture['src']}")
+        #end
+        $util.toJson($ctx.result.items)
+      Kind: "PIPELINE"
+      PipelineConfig:
+        Functions:
+        - !GetAtt isFriendFunction.FunctionId
+        - !GetAtt getPicturesByOwnerFunction.FunctionId
+
+  isFriendFunction:
+    Type: AWS::AppSync::FunctionConfiguration
+    Properties:
+      ApiId: !GetAtt AppSyncPipelineApi.ApiId
+      Name: "isFriend"
+      Description: "Function to check if two users are friends."
+      DataSourceName: !GetAtt DynamoDBFriendsTableDatasource.Name
+      RequestMappingTemplate: |
+        #set($ownerId = $ctx.prev.result.owner)
+        #set($callerId = $ctx.prev.result.callerId)
+
+        ## if the owner is the caller, no need to make the check
+        #if($ownerId == $callerId)
+            #return($ctx.prev.result)
+        #end
+
+        {
+            "version" : "2018-05-29",
+
+            "operation" : "GetItem",
+
+            "key" : {
+                "userId" : $util.dynamodb.toDynamoDBJson($callerId),
+                "friendId" : $util.dynamodb.toDynamoDBJson($ownerId)
+            }
+        }
+      ResponseMappingTemplate: |
+        #if($ctx.error)
+            $util.error("Unable to retrieve friend mapping message: ${ctx.error.message}", $ctx.error.type)
+        #end
+
+        ## if the users aren't friends
+        #if(!$ctx.result)
+            $util.unauthorized()
+        #end
+
+        $util.toJson($ctx.prev.result)
+      FunctionVersion: "2018-05-29"
+
+  getPicturesByOwnerFunction:
+    Type: AWS::AppSync::FunctionConfiguration
+    Properties:
+      ApiId: !GetAtt AppSyncPipelineApi.ApiId
+      Name: "getPicturesByOwner"
+      Description: "Function to retrieve pictures owner by a user."
+      DataSourceName: !GetAtt DynamoDBPicturesTableDatasource.Name
+      RequestMappingTemplate: |
+        {
+            "version" : "2018-05-29",
+
+            "operation" : "Query",
+
+            "query" : {
+                "expression": "#owner = :owner",
+                "expressionNames": {
+                    "#owner" : "owner"
+                },
+                "expressionValues" : {
+                    ":owner" : $util.dynamodb.toDynamoDBJson($ctx.prev.result.owner)
+                }
+            },
+
+            "index": "owner-index"
+        }
+      ResponseMappingTemplate: |
+        #if($ctx.error)
+            $util.error($ctx.error.message, $ctx.error.type)
+        #end
+
+        $util.toJson($ctx.result)
+      FunctionVersion: "2018-05-29"
+
+  ############################
+  # Amazon Cognito User Pool #
+  ############################
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      MfaConfiguration: "OFF"
+      UserPoolName:
+        Fn::Sub: "${ResourceNamePrefix}UserPool"
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: "simpleClient"
+      ExplicitAuthFlows:
+      - "ADMIN_NO_SRP_AUTH"
+      GenerateSecret: FALSE
+      UserPoolId:
+        Ref: UserPool
+
+  ############################
+  # UserPool Groups          #
+  ############################
+
+  UserPoolGroupAdmin:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      Description: "Admin can perform all operations"
+      GroupName: "Admins"
+      Precedence: 0
+      UserPoolId:
+        Ref: UserPool
+
+  UserPoolGroupViewers:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      Description: "Viewers can only access pictures"
+      GroupName: "Viewers"
+      Precedence: 1
+      UserPoolId:
+        Ref: UserPool
+
+  ############################
+  # UserPool User 1 - Nadia  #
+  ############################
+
+  UserPoolUserAdmin:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      Username: !Ref UserPoolUsername
+      DesiredDeliveryMediums:
+        - "EMAIL"
+      UserAttributes:
+        - Name: email_verified
+          Value: true
+        - Name: email
+          Value:
+            Ref: UserPoolUserEmail
+      UserPoolId:
+        Ref: UserPool
+
+  UserPoolUserAdminToAdmin:
+    Type: AWS::Cognito::UserPoolUserToGroupAttachment
+    Properties:
+      GroupName: "Admins"
+      Username: !Ref UserPoolUsername
+      UserPoolId:
+        Ref: UserPool
+    DependsOn:
+    - UserPoolGroupAdmin
+    - UserPoolUserAdmin
+
+  UserPoolUserAdminToViewers:
+    Type: AWS::Cognito::UserPoolUserToGroupAttachment
+    Properties:
+      GroupName: "Viewers"
+      Username: !Ref UserPoolUsername
+      UserPoolId:
+        Ref: UserPool
+    DependsOn:
+    - UserPoolGroupViewers
+    - UserPoolUserAdmin
+
+  ############################
+  # UserPool User 2 - Shaggy #
+  ############################
+
+  UserPoolUser2Viewer:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      Username: "shaggy"
+      DesiredDeliveryMediums:
+      - "EMAIL"
+      UserAttributes:
+      - Name: email_verified
+        Value: true
+      - Name: email
+        Value:
+          Ref: UserPoolUserEmail
+      UserPoolId:
+        Ref: UserPool
+
+  UserPoolUser2ViewerToViewers:
+    Type: AWS::Cognito::UserPoolUserToGroupAttachment
+    Properties:
+      GroupName: "Viewers"
+      Username: "shaggy"
+      UserPoolId:
+        Ref: UserPool
+    DependsOn:
+      - UserPoolGroupViewers
+      - UserPoolUser2Viewer
+
+  ############################
+  # UserPool User 3 - Rex    #
+  ############################
+
+  UserPoolUser3Viewer:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      Username: "rex"
+      DesiredDeliveryMediums:
+      - "EMAIL"
+      UserAttributes:
+      - Name: email_verified
+        Value: true
+      - Name: email
+        Value:
+          Ref: UserPoolUserEmail
+      UserPoolId:
+        Ref: UserPool
+
+  UserPoolUser3ViewerToViewers:
+    Type: AWS::Cognito::UserPoolUserToGroupAttachment
+    Properties:
+      GroupName: "Viewers"
+      Username: "rex"
+      UserPoolId:
+        Ref: UserPool
+    DependsOn:
+    - UserPoolGroupViewers
+    - UserPoolUser3Viewer
+
+  ############################
+  # AWS IAM Roles & Policies #
+  ############################
+
+  AppSyncTutorialAmazonDynamoDBRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        Fn::Sub: ${ResourceNamePrefix}DynamoDBRole
+      ManagedPolicyArns:
+      - Ref: AppSyncTutorialAmazonDynamoDBPolicy
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action:
+          - sts:AssumeRole
+          Principal:
+            Service:
+            - appsync.amazonaws.com
+    DependsOn:
+    - AppSyncTutorialAmazonDynamoDBPolicy
+
+  AppSyncTutorialAmazonDynamoDBPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Managed policy to allow AWS AppSync to access the tables created by this template.
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:DeleteItem
+          - dynamodb:UpdateItem
+          - dynamodb:Query
+          - dynamodb:BatchWriteItem
+          Resource:
+          - Fn::Join:
+            - ""
+            - - !GetAtt AppSyncTutorialPicturesTable.Arn
+              - "*"
+          - Fn::Join:
+            - ""
+            - - !GetAtt AppSyncTutorialFriendsTable.Arn
+              - "*"
+
+  ##########################
+  # Amazon DynamoDB Tables #
+  ##########################
+
+  AppSyncTutorialPicturesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      - AttributeName: owner
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName:
+        Fn::Sub: "${ResourceNamePrefix}Pictures"
+      GlobalSecondaryIndexes:
+      - IndexName: owner-index
+        KeySchema:
+        - AttributeName: owner
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+  AppSyncTutorialFriendsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: userId
+        AttributeType: S
+      - AttributeName: friendId
+        AttributeType: S
+      KeySchema:
+      - AttributeName: userId
+        KeyType: HASH
+      - AttributeName: friendId
+        KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName:
+        Fn::Sub: "${ResourceNamePrefix}Friends"
+
+Outputs:
+  AppSyncTutorialAmazonDynamoDBRole:
+    Description: The IAM Role ARN that AWS Appsync will assume when interacting with Amazon DynamoDB.
+    Value: !GetAtt AppSyncTutorialAmazonDynamoDBRole.Arn
+  AppSyncTutorialPicturesTable:
+    Description: The name of the Amazon DynamoDB table containing pictures data.
+    Value: !Ref AppSyncTutorialPicturesTable
+  AppSyncTutorialFriendsTable:
+    Description: The name of the Amazon DynamoDB table containing relationship data.
+    Value: !Ref AppSyncTutorialFriendsTable
+  UserPoolClient:
+    Description: The UserPool AppClient ID used when logging into the UserPool.
+    Value: !Ref UserPoolClient
