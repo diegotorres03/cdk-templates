@@ -54,10 +54,11 @@ new WebAppStack(app, 'gql-webapp', {
   env,
 })
 
-new FullDemoStack(app, 'full-demo')
+new FullDemoStack(app, 'full-demo', {})
 
 // gqlApi.createApi()
 // .schema('./graphql/schema.gql')
+
 
 
 
