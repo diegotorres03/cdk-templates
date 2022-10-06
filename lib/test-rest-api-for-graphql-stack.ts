@@ -20,7 +20,7 @@ export class TestApiForGQLStack extends Stack {
     constructor(scope: Construct, id: string, props: StackProps) {
         super(scope, id, props)
 
-        const restApiBuilder = new ApiBuilderConstruct(this, 'sample-api-gql', { env: { ...props.env } })
+        const restApiBuilder = new ApiBuilderConstruct(this, 'sample-api-gql')
 
         const restApi = restApiBuilder.createApi('gql-demo-rest')
 
