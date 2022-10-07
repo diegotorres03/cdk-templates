@@ -22,7 +22,7 @@ import { ApiBuilderConstruct } from '../rest-api/api-builder-construct'
 
 const getHandlerFromInlineFn = (fn: Function) => {
     const functionCodeStr = fn.toString()
-    let code = undefined
+    let code
 
     if (functionCodeStr.includes('exports.handler = ')) {
         code = `(${functionCodeStr})()`
@@ -354,8 +354,8 @@ export class GraphQLConstruct extends Construct {
     }) {
         if (!options.name) throw new Error('name is required')
 
-        let vpc = undefined
-        let sgs = undefined
+        let vpc
+        let sgs
         if (options.vpc) {
             vpc = options.vpc as EC2.Vpc
             sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG', 'default', options.vpc)]
@@ -367,7 +367,7 @@ export class GraphQLConstruct extends Construct {
 
 
         const functionCodeStr = functionCode.toString()
-        let code = undefined
+        let code
 
         if (functionCodeStr.includes('exports.handler = ')) {
             console.log('full function')

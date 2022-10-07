@@ -27,7 +27,7 @@ export class ApiStack extends Stack {
     constructor(scope: Construct, id: string, props: ApiStackProps) {
         super(scope, id, props)
 
-        const apiBuilder = new ApiBuilderConstruct(this, 'dax-test', { env: { ...props.env } })
+        const apiBuilder = new ApiBuilderConstruct(this, 'dax-test')
         const api = apiBuilder.createApi('dax-test')
 
         console.log(props.daxCache.attrClusterDiscoveryEndpointUrl)

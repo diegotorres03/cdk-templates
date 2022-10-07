@@ -104,15 +104,22 @@ export class ApiBuilderConstruct extends Construct {
      * @returns 
      */
     createLambda(functionCode: Function, options: {
-        name: string, env: any, access: Function[], vpc: EC2.Vpc, securityGroupIds: string[]
+        name: string,
+        env: any,
+        access: Function[],
+        vpc: EC2.Vpc | string,
+        securityGroupIds: string[],
+        layers?: Lambda.ILayerVersion[]
     }) {
         if (!options.name) throw new Error('name is required')
 
-        let vpc = undefined
-        let sgs = undefined
+        let vpc
+        let sgs
         if (options.vpc) {
-            vpc = options.vpc as EC2.Vpc
-            sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG', 'default', options.vpc)]
+            vpc = options.vpc === 'default' ?
+                EC2.Vpc.fromLookup(this, 'default-vpc', { isDefault: true }) :
+                options.vpc as EC2.Vpc
+            sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG', 'default', vpc)]
             //  sgs = Array.isArray(options.securityGroupIds) ? options.securityGroupIds
             //     .map(sgId => EC2.SecurityGroup.fromSecurityGroupId(this, 'sgid', sgId)) : []
             console.log('sgids', options.securityGroupIds)
@@ -121,7 +128,7 @@ export class ApiBuilderConstruct extends Construct {
 
 
         const functionCodeStr = functionCode.toString()
-        let code = undefined
+        let code
 
         if (functionCodeStr.includes('exports.handler = ')) {
             console.log('full function')
@@ -138,13 +145,14 @@ export class ApiBuilderConstruct extends Construct {
             runtime: Lambda.Runtime.NODEJS_16_X,
             code: Lambda.Code.fromInline(code),
             timeout: Duration.minutes(1),
+            // layers: Array.isArray(options.layers) ? [...options.layers] : [],
             // code: Lambda.Code.fromAsset(lambdaDef.path),
             allowPublicSubnet: vpc ? true : undefined,
             securityGroups: sgs,
             handler: 'index.handler',
             vpc,
             environment: { ...options.env }
-        }
+        } as Lambda.FunctionProps
 
 
         // console.log('\n\nlambda params')
