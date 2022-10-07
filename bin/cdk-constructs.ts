@@ -22,7 +22,7 @@ const env = {
 // console.log('defaultVpc', defaultVpc)
 
 const securityGroupIds = ["sgr-022dc12c5095e64c1"]
-const subnets = ["subnet-a66de6cd", "subnet-a65392db", "subnet-055f7749"]
+const subnetIds = ["subnet-a66de6cd", "subnet-a65392db", "subnet-055f7749"]
 // const tables = new TableStack(app, 'tables', {
 //   daxSubnetIds: subnets,
 //   daxSecurityGroupIds: securityGroupIds,
@@ -49,12 +49,21 @@ const subnets = ["subnet-a66de6cd", "subnet-a65392db", "subnet-055f7749"]
 
 // const testRest = new TestApiForGQLStack(app, 'test-rest-gql', { env })
 
-new WebAppStack(app, 'gql-webapp', {
-  assetsPath: './webapp-gql-test/dist',
+new WebAppStack(app, 'webapp', {
+  assetsPath: './webapp',
   env,
 })
 
-new FullDemoStack(app, 'full-demo', {})
+// new WebAppStack(app, 'gql-webapp', {
+//   assetsPath: './webapp-gql-test/dist',
+//   env,
+// })
+
+// new FullDemoStack(app, 'full-demo', {
+//   env,
+//   daxSecurityGroupIds: securityGroupIds,
+//   daxSubnetIds: subnetIds,
+// })
 
 // gqlApi.createApi()
 // .schema('./graphql/schema.gql')
