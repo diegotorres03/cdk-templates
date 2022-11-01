@@ -21,7 +21,7 @@ const env = {
 // const defaultVpc = cdk.aws_ec2.Vpc.fromLookup(app, 'default-vpc', { vpcId: 'vpc-9cb3d0f7', region: 'us-east-2' })
 // console.log('defaultVpc', defaultVpc)
 
-const securityGroupIds = ["sgr-022dc12c5095e64c1"]
+const securityGroupIds = ["sg-87eb21cc"]
 const subnetIds = ["subnet-a66de6cd", "subnet-a65392db", "subnet-055f7749"]
 // const tables = new TableStack(app, 'tables', {
 //   daxSubnetIds: subnets,
@@ -54,16 +54,11 @@ new WebAppStack(app, 'webapp', {
   env,
 })
 
-// new WebAppStack(app, 'gql-webapp', {
-//   assetsPath: './webapp-gql-test/dist',
-//   env,
-// })
-
-// new FullDemoStack(app, 'full-demo', {
-//   env,
-//   daxSecurityGroupIds: securityGroupIds,
-//   daxSubnetIds: subnetIds,
-// })
+new FullDemoStack(app, 'full-demo', {
+  daxSecurityGroupIds: securityGroupIds,
+  daxSubnetIds: subnetIds,
+  env,
+})
 
 // gqlApi.createApi()
 // .schema('./graphql/schema.gql')

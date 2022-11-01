@@ -31,7 +31,6 @@ export class DynamoCostruct extends Construct {
 
     constructor(scope: Construct, id: string) {
         super(scope, id)
-
     }
 
     addKeys(partitionKey: string, sortKey?: string) {
@@ -51,11 +50,15 @@ export class DynamoCostruct extends Construct {
 
         new CfnOutput(this, 'tableName', {
             value: this.table.tableName,
-            exportName: 'tableName'
+            // exportName: 'tableName'
         })
     }
 
-    end() {}
+    end() {
+        // this.params = {...this.params, billingMode}
+
+        this.table = new Dynamo.Table(this, 'testTable', this.params)
+    }
 
     addIndex() {
         throw new Error(unimplementedError)
@@ -82,14 +85,14 @@ export class DynamoCostruct extends Construct {
         const daxSubnetGroup = new Dax.CfnSubnetGroup(this, 'DaxSubnetGroup', {
             description: 'private subnet group for DAX',
             subnetIds: params.subnetIds, // [] create a subnet and get the id
-            subnetGroupName: 'dax-test-group',
+            subnetGroupName: 'dax-test-group-2',
         })
 
         this.daxCache = new Dax.CfnCluster(this, 'DaxCluster', {
             iamRoleArn: daxRole.roleArn,
             nodeType: 'dax.t3.small',
             replicationFactor: 1,
-            // securityGroupIds: props.daxSecurityGroupIds,
+            securityGroupIds: params.securityGroupIds,
             subnetGroupName: daxSubnetGroup.ref
         })
 
@@ -97,7 +100,7 @@ export class DynamoCostruct extends Construct {
 
         new CfnOutput(this, 'daxEndpoint', {
             value: this.daxCache.attrClusterDiscoveryEndpointUrl,
-            exportName: 'daxClusterEndpointUrl'
+            // exportName: 'daxClusterEndpointUrl'
         })
 
     }
