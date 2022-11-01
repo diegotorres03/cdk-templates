@@ -23,11 +23,6 @@ export class GraphQLStack extends Stack {
         // @ts-ignore
         super(scope, id, props)
 
-        const gql = new GraphQLConstruct(this, 'test-api')
-
-
-        gql.createApi('./graphql/schema.gql')
-
         // lib/appsync-cdk-app-stack.ts
         const notesTable = new DynamoDB.Table(this, 'CDKNotesTablee', {
             billingMode: DynamoDB.BillingMode.PAY_PER_REQUEST,
@@ -39,11 +34,16 @@ export class GraphQLStack extends Stack {
         })
 
 
+    
+        const gql = new GraphQLConstruct(this, 'test-api')
+
+        gql.createApi('./graphql/schema.gql')
+
         gql.query('getNoteById')
             // @ts-ignore
             .fn(async function (event) {
                 console.log(event)
-                const noteId = event.arguments.noteId // [x] get this from event
+                const noteId = event.arguments.noteId
                 const AWS = require('aws-sdk')
                 const docClient = new AWS.DynamoDB.DocumentClient()
                 const params = {
@@ -57,9 +57,24 @@ export class GraphQLStack extends Stack {
                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
                 access: [(fn: Lambda.Function) => notesTable.grantReadData(fn)]
             })
-            .requestMapping('request mapping')
-            .responseMapping('response mapping')
+            .requestMapping('TODO: request mapping here')
+            .responseMapping('TODO: response mapping here')
             .end()
+
+            
+        /////////////////////
+        // [ ] this is the desired way to use
+        gql.query('listNotes')
+            .pipe({})
+            .fn('fn1')
+            .fn('fn2')
+            .fn('fn3')
+            .fn('fn4')
+            .endPipe()
+            // .fn(fn, opts)
+            // .http({method: 'get', url: 'https://endpoint.com:port/path'})
+            // .end()
+
 
         gql.query('listNotes')
             // @ts-ignore

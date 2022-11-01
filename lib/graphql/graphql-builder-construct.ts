@@ -18,6 +18,8 @@ import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { promises as fs } from 'fs'
 
+const { log } = console
+
 import { ApiBuilderConstruct } from '../rest-api/api-builder-construct'
 
 const getHandlerFromInlineFn = (fn: Function) => {
@@ -30,7 +32,7 @@ const getHandlerFromInlineFn = (fn: Function) => {
         code = `(function() {
             exports.handler = ${functionCodeStr}
         })()`
-        console.log(code)
+        log(code)
     }
     return code
 }
@@ -38,16 +40,16 @@ const getHandlerFromInlineFn = (fn: Function) => {
 const next = (resolverParams: any, run: Function) => ({
     requestMapping(mappingTemplate: string) {
         resolverParams['requestMappingTemplate'] = mappingTemplate
-        console.log(mappingTemplate)
+        log(mappingTemplate)
         return this
     },
     responseMapping(mappingTemplate: string) {
         resolverParams['responseMappingTemplate'] = mappingTemplate
-        console.log(mappingTemplate)
+        log(mappingTemplate)
         return this
     },
     end() {
-        console.log(resolverParams)
+        log(resolverParams)
         return run(resolverParams)
     }
 })
@@ -62,7 +64,7 @@ export class GraphQLConstruct extends Construct {
     private httpDataSource: AppSync.CfnDataSource
 
     private http = (type: string, fieldName: string, apiId: string) => (endpoint: { url: string, method?: string }) => {
-        console.log(endpoint)
+        log(endpoint)
 
         this.httpDataSource = new AppSync.CfnDataSource(this, `http-data-source-${type}-${fieldName}`, {
             apiId: apiId,
@@ -87,7 +89,8 @@ export class GraphQLConstruct extends Construct {
                 dataSourceName: this.httpDataSource.name,
                 requestMappingTemplate: params.requestMappingTemplate,
                 responseMappingTemplate: params.responseMappingTemplate,
-            }
+
+            } as AppSync.CfnResolverProps
             console.table(resolverParams)
             const resolver = new AppSync.CfnResolver(this, `resolver-${type}-${fieldName}`, resolverParams)
             resolver.addDependsOn(this.httpDataSource)
@@ -135,6 +138,9 @@ export class GraphQLConstruct extends Construct {
                 dataSourceName: dataSource.name,
                 requestMappingTemplate: params.requestMappingTemplate,
                 responseMappingTemplate: params.responseMappingTemplate,
+                pipelineConfig: {
+                    functions: []
+                }
 
             })
             resolver.addDependsOn(dataSource)
@@ -144,181 +150,6 @@ export class GraphQLConstruct extends Construct {
     constructor(scope: Construct, id: string, props?: StackProps) {
         // @ts-ignore
         super(scope, id, props)
-
-
-
-        //         this.createApi('./graphql/schema.gql')
-
-        //         const resolverList = [
-        //             { type: 'Query', name: 'getNoteById' },
-        //             { type: 'Query', name: 'listNotes' },
-        //             { type: 'Mutation', name: 'createNote' },
-        //             { type: 'Mutation', name: 'deleteNote' },
-        //             { type: 'Mutation', name: 'updateNote' },
-        //         ]
-
-        //         // lib/appsync-cdk-app-stack.ts
-        //         const notesTable = new DynamoDB.Table(this, 'CDKNotesTable', {
-        //             billingMode: DynamoDB.BillingMode.PAY_PER_REQUEST,
-        //             partitionKey: {
-        //                 name: 'id',
-        //                 type: DynamoDB.AttributeType.STRING,
-        //             },
-        //         });
-
-
-        //         this.query('getNoteById')
-        //             // @ts-ignore
-        //             .fn(async function (event) {
-        //                 console.log(event)
-        //                 const noteId = event.arguments.noteId // [x] get this from event
-        //                 const AWS = require('aws-sdk')
-        //                 const docClient = new AWS.DynamoDB.DocumentClient()
-        //                 const params = {
-        //                     TableName: process.env.NOTES_TABLE,
-        //                     Key: { id: noteId }
-        //                 }
-        //                 const { Item } = await docClient.get(params).promise()
-        //                 return Item
-        //             }, {
-        //                 name: 'get-note-by-id',
-        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-        //                 access: [(fn: Lambda.Function) => notesTable.grantReadData(fn)]
-        //             })
-        //             .requestMapping('request mapping')
-        //             .responseMapping('response mapping')
-        //             .end()
-
-        //         this.query('listNotes')
-        //             // @ts-ignore
-        //             .fn(async function (event) {
-        //                 console.log(event)
-        //                 const AWS = require('aws-sdk')
-        //                 const docClient = new AWS.DynamoDB.DocumentClient()
-        //                 const params = {
-        //                     TableName: process.env.NOTES_TABLE,
-        //                 }
-        //                 console.log('dynamo params')
-        //                 console.log(params)
-        //                 const data = await docClient.scan(params).promise()
-        //                 return data.Items
-
-        //             }, {
-        //                 name: 'list-nodes',
-        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-        //                 access: [(fn: Lambda.Function) => notesTable.grantReadData(fn)]
-        //             })
-        //             .end()
-
-        //         this.mutation('createNote')
-        //             // @ts-ignore    
-        //             .fn(async function (event) {
-        //                 console.log(event)
-        //                 const AWS = require('aws-sdk')
-        //                 const docClient = new AWS.DynamoDB.DocumentClient()
-        //                 const note = event.arguments.note // [x] get from event
-        //                 const params = {
-        //                     TableName: process.env.NOTES_TABLE,
-        //                     Item: note
-        //                 }
-        //                 await docClient.put(params).promise()
-        //                 console.log('note')
-        //                 console.log(note)
-        //                 return note
-        //             }, {
-        //                 name: 'create-note',
-        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-        //                 access: [(fn: Lambda.Function) => notesTable.grantWriteData(fn)]
-        //             })
-        //             .end()
-
-        //         this.mutation('deleteNote')
-        //             // @ts-ignore
-        //             .fn(async function (event) {
-        //                 console.log(event)
-        //                 const AWS = require('aws-sdk')
-        //                 const docClient = new AWS.DynamoDB.DocumentClient()
-        //                 const noteId = event.arguments.noteId // [x] get from event
-        //                 const params = {
-        //                     TableName: process.env.NOTES_TABLE,
-        //                     Key: {
-        //                         id: noteId
-        //                     }
-        //                 }
-        //                 await docClient.delete(params).promise()
-        //                 return noteId
-        //             }, {
-        //                 name: 'delete-note',
-        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-        //                 access: [(fn: Lambda.Function) => notesTable.grantWriteData(fn)]
-        //             })
-        //             .end()
-
-        //         this.mutation('updateNote')
-        //             // @ts-ignore
-        //             .fn(async function (event) {
-        //                 console.log(event)
-        //                 const AWS = require('aws-sdk')
-        //                 const docClient = new AWS.DynamoDB.DocumentClient()
-        //                 const note = event.arguments.note // [x] get from event
-        //                 let params = {
-        //                     TableName: process.env.NOTES_TABLE,
-        //                     Key: {
-        //                         id: note.id
-        //                     },
-        //                     ExpressionAttributeValues: {},
-        //                     ExpressionAttributeNames: {},
-        //                     UpdateExpression: "",
-        //                     ReturnValues: "UPDATED_NEW"
-        //                 }
-        //                 let prefix = "set "
-        //                 let attributes = Object.keys(note)
-        //                 for (let i = 0; i < attributes.length; i++) {
-        //                     let attribute = attributes[i]
-        //                     if (attribute !== "id") {
-        //                         params["UpdateExpression"] += prefix + "#" + attribute + " = :" + attribute
-        //                         // @ts-ignore
-        //                         params["ExpressionAttributeValues"][":" + attribute] = note[attribute]
-        //                         // @ts-ignore
-        //                         params["ExpressionAttributeNames"]["#" + attribute] = attribute
-        //                         prefix = ", "
-        //                     }
-        //                 }
-        //                 console.log('params: ', params)
-
-        //                 await docClient.update(params).promise()
-        //                 return note
-
-        //             }, {
-        //                 name: 'update-note',
-        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-        //                 access: [(fn: Lambda.Function) => notesTable.grantWriteData(fn)]
-        //             })
-        //             .end()
-
-        //         this.query('listUserItems')
-        //             .http({ url: 'https://hyv8xaaj80.execute-api.us-east-2.amazonaws.com/dev', method: 'get' })
-        //             .requestMapping(`{
-        //     "version": "2018-05-29",
-        //     "method": "GET",
-        //     "params": {
-        //         "headers": {
-        //             "Content-Type": "application/json"
-        //         }
-        //     },
-        //     "resourcePath": "/users"
-        // }`)
-        //             .responseMapping(`## return the body
-        // #if($ctx.result.statusCode == 200)
-        //     ##if response is 200
-        //     $ctx.result.body
-        // #else
-        //     ##if response is not 200, append the response to error block.
-        //     $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
-        // #end`)
-        //             .end()
-
-
     }
 
     async createApi(schemaPath: string) {
@@ -361,8 +192,8 @@ export class GraphQLConstruct extends Construct {
             sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG-' + options.name, 'default', options.vpc)]
             //  sgs = Array.isArray(options.securityGroupIds) ? options.securityGroupIds
             //     .map(sgId => EC2.SecurityGroup.fromSecurityGroupId(this, 'sgid', sgId)) : []
-            console.log('sgids', options.securityGroupIds)
-            console.log(sgs)
+            log('sgids', options.securityGroupIds)
+            log(sgs)
         }
 
 
@@ -370,14 +201,14 @@ export class GraphQLConstruct extends Construct {
         let code
 
         if (functionCodeStr.includes('exports.handler = ')) {
-            console.log('full function')
+            log('full function')
             code = `(${functionCodeStr})()`
         } else {
-            console.log('handler function')
+            log('handler function')
             code = `(function() {
                 exports.handler = ${functionCodeStr}
             })()`
-            console.log(code)
+            log(code)
         }
 
         const lambdaParams = {
@@ -393,8 +224,8 @@ export class GraphQLConstruct extends Construct {
         }
 
 
-        // console.log('\n\nlambda params')
-        // console.log(lambdaParams)
+        // log('\n\nlambda params')
+        // log(lambdaParams)
 
         const lambda = new Lambda.Function(this, options.name, lambdaParams)
 
@@ -425,14 +256,50 @@ export class GraphQLConstruct extends Construct {
             return next({ tableName }, (params: any) => { })
         }
 
+
+        const pipe = (pipeContext: any = {}) => {
+
+            const handlers = {
+                fn: (...params) => {
+                    console.log('on pipeline lambda handler')
+                    if(!pipeContext.lambdas) pipeContext.lambdas = []
+                    pipeContext.lambdas.push(params)
+                    return handlers
+                },
+                html: () => { },
+                dynamo: () => { },
+                endPipe: () => { return }
+            }
+            return handlers
+        }
+
         return {
             fn: this.fn('Query', fieldName, this.api.attrApiId),
             http: this.http('Query', fieldName, this.api.attrApiId),
             dynamo,
+            pipe,
         }
     }
 
     subscription(fieldName: string) { }
+
+    /**
+     * This method enable pipeline resolvers
+     */
+    pipe(fn: Lambda.Function) {
+
+        const html = () => { }
+        const dynamo = (tableName: string) => {
+            return next({ tableName }, (params: any) => { })
+        }
+
+
+        return {
+            fn: () => { },
+            html: () => { },
+            dynamo: () => { },
+        }
+    }
 
 
 
