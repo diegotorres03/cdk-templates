@@ -117,13 +117,13 @@ export class ApiBuilderConstruct extends Construct {
         let sgs
         if (options.vpc) {
             vpc = options.vpc === 'default' ?
-                EC2.Vpc.fromLookup(this, 'default-vpc', { isDefault: true }) :
+                EC2.Vpc.fromLookup(this, 'default-vpc-' + options.name, { isDefault: true }) :
                 options.vpc as EC2.Vpc
-            sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG', 'default', vpc)]
+            sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG-' + options.name, 'default', vpc)]
             //  sgs = Array.isArray(options.securityGroupIds) ? options.securityGroupIds
             //     .map(sgId => EC2.SecurityGroup.fromSecurityGroupId(this, 'sgid', sgId)) : []
-            console.log('sgids', options.securityGroupIds)
-            console.log(sgs)
+            // console.log('sgids', options.securityGroupIds)
+            // console.log(sgs)
         }
 
 
@@ -131,14 +131,14 @@ export class ApiBuilderConstruct extends Construct {
         let code
 
         if (functionCodeStr.includes('exports.handler = ')) {
-            console.log('full function')
+            // console.log('full function')
             code = `(${functionCodeStr})()`
         } else {
-            console.log('handler function')
+            // console.log('handler function')
             code = `(function() {
                 exports.handler = ${functionCodeStr}
             })()`
-            console.log(code)
+            // console.log(code)
         }
 
         const lambdaParams = {

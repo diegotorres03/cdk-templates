@@ -1,0 +1,86 @@
+let apiGateways = Resources.*[ Type == 'AWS::ApiGateway::RestApi']
+let stage = Resources.*[ Type == 'AWS::ApiGateway::Stage']
+let resource = Resources.*[ Type == 'AWS::ApiGateway::Resource']
+
+
+# check method have an integration
+let method = Resources.*[ Type == 'AWS::ApiGateway::Method' ]
+rule method_must_have_integration when %method !empty {
+    %method.Properties {
+        RestApiId exists
+        AuthorizationType exists 
+    }
+}
+
+
+let lambda_method = Resources.*[ 
+    Type == 'AWS::ApiGateway::Method'
+    Properties.Integration.Type == 'AWS_PROXY'
+]
+rule method_must_have_integration_lambda when %lambda_method !empty {
+    %lambda_method.Properties {
+       Integration {
+            IntegrationHttpMethod == 'POST'
+            Type == 'AWS_PROXY'
+            Uri exists
+        }
+    }
+}   
+
+let mock_method = Resources.*[ 
+    Type == 'AWS::ApiGateway::Method'
+    Properties.Integration.Type == 'MOCK'
+]
+rule method_must_have_integration_mock when %mock_method !empty {
+    %mock_method.Properties {
+        Integration {
+            IntegrationResponses[*].ResponseParameters exists
+            Type == 'MOCK'
+            RequestTemplates exists
+        }
+    }
+}  
+
+
+let apiAccount = Resources.*[ Type == 'AWS::ApiGateway::Account']
+rule account_must_have_role when %apiAccount !empty {
+    %apiAccount.Properties {
+        CloudWatchRoleArn exists
+    }
+}
+
+
+# this rule will help ensure the api ApiGateway can access 
+let CloudWatchRole = Resources.*[ 
+    Type == 'AWS::IAM::Role' 
+    Properties.AssumeRolePolicyDocument.Statement[*].Principal.Service == 'lambda.amazonaws.com'
+]
+rule assume_role_from_lambda when %CloudWatchRole !empty {
+    %CloudWatchRole.Properties {
+        AssumeRolePolicyDocument.Statement[*] {
+           Action == 'sts:AssumeRole'
+           Effect == 'Allow'
+           Principal.Service == 'lambda.amazonaws.com'
+        }
+    }
+}
+
+# this rule help ensure api gateway can invoke lambda function
+let lambda_api_gateway_permission = Resources.*[
+    Type == 'AWS::Lambda::Permission'
+    Properties.Principal == 'apigateway.amazonaws.com'
+]
+rule api_gateway_can_invoke_lambda when %lambda_api_gateway_permission !empty {
+    %lambda_api_gateway_permission.Properties {
+       Action == 'lambda:InvokeFunction'
+       FunctionName['Fn::GetAtt'] exists
+       SourceArn exists
+    }
+}
+
+
+let lambda_dynamo_role = Resources.*[
+    "Type": "AWS::IAM::Policy"
+]
+
+

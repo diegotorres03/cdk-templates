@@ -10,9 +10,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-appconfig": "^3.199.0",
+    "@aws-sdk/client-appconfigdata": "^3.199.0",
     "@aws-sdk/client-appsync": "^3.181.0",
     "aws-amplify": "^4.3.37",
     "aws-crt": "^1.14.4",
+    "aws-sdk": "^2.1243.0",
     "axios": "^0.27.2"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.10.0"
   }
 }

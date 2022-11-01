@@ -147,176 +147,176 @@ export class GraphQLConstruct extends Construct {
 
 
 
-//         this.createApi('./graphql/schema.gql')
+        //         this.createApi('./graphql/schema.gql')
 
-//         const resolverList = [
-//             { type: 'Query', name: 'getNoteById' },
-//             { type: 'Query', name: 'listNotes' },
-//             { type: 'Mutation', name: 'createNote' },
-//             { type: 'Mutation', name: 'deleteNote' },
-//             { type: 'Mutation', name: 'updateNote' },
-//         ]
+        //         const resolverList = [
+        //             { type: 'Query', name: 'getNoteById' },
+        //             { type: 'Query', name: 'listNotes' },
+        //             { type: 'Mutation', name: 'createNote' },
+        //             { type: 'Mutation', name: 'deleteNote' },
+        //             { type: 'Mutation', name: 'updateNote' },
+        //         ]
 
-//         // lib/appsync-cdk-app-stack.ts
-//         const notesTable = new DynamoDB.Table(this, 'CDKNotesTable', {
-//             billingMode: DynamoDB.BillingMode.PAY_PER_REQUEST,
-//             partitionKey: {
-//                 name: 'id',
-//                 type: DynamoDB.AttributeType.STRING,
-//             },
-//         });
+        //         // lib/appsync-cdk-app-stack.ts
+        //         const notesTable = new DynamoDB.Table(this, 'CDKNotesTable', {
+        //             billingMode: DynamoDB.BillingMode.PAY_PER_REQUEST,
+        //             partitionKey: {
+        //                 name: 'id',
+        //                 type: DynamoDB.AttributeType.STRING,
+        //             },
+        //         });
 
 
-//         this.query('getNoteById')
-//             // @ts-ignore
-//             .fn(async function (event) {
-//                 console.log(event)
-//                 const noteId = event.arguments.noteId // [x] get this from event
-//                 const AWS = require('aws-sdk')
-//                 const docClient = new AWS.DynamoDB.DocumentClient()
-//                 const params = {
-//                     TableName: process.env.NOTES_TABLE,
-//                     Key: { id: noteId }
-//                 }
-//                 const { Item } = await docClient.get(params).promise()
-//                 return Item
-//             }, {
-//                 name: 'get-note-by-id',
-//                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-//                 access: [(fn: Lambda.Function) => notesTable.grantReadData(fn)]
-//             })
-//             .requestMapping('request mapping')
-//             .responseMapping('response mapping')
-//             .end()
+        //         this.query('getNoteById')
+        //             // @ts-ignore
+        //             .fn(async function (event) {
+        //                 console.log(event)
+        //                 const noteId = event.arguments.noteId // [x] get this from event
+        //                 const AWS = require('aws-sdk')
+        //                 const docClient = new AWS.DynamoDB.DocumentClient()
+        //                 const params = {
+        //                     TableName: process.env.NOTES_TABLE,
+        //                     Key: { id: noteId }
+        //                 }
+        //                 const { Item } = await docClient.get(params).promise()
+        //                 return Item
+        //             }, {
+        //                 name: 'get-note-by-id',
+        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
+        //                 access: [(fn: Lambda.Function) => notesTable.grantReadData(fn)]
+        //             })
+        //             .requestMapping('request mapping')
+        //             .responseMapping('response mapping')
+        //             .end()
 
-//         this.query('listNotes')
-//             // @ts-ignore
-//             .fn(async function (event) {
-//                 console.log(event)
-//                 const AWS = require('aws-sdk')
-//                 const docClient = new AWS.DynamoDB.DocumentClient()
-//                 const params = {
-//                     TableName: process.env.NOTES_TABLE,
-//                 }
-//                 console.log('dynamo params')
-//                 console.log(params)
-//                 const data = await docClient.scan(params).promise()
-//                 return data.Items
+        //         this.query('listNotes')
+        //             // @ts-ignore
+        //             .fn(async function (event) {
+        //                 console.log(event)
+        //                 const AWS = require('aws-sdk')
+        //                 const docClient = new AWS.DynamoDB.DocumentClient()
+        //                 const params = {
+        //                     TableName: process.env.NOTES_TABLE,
+        //                 }
+        //                 console.log('dynamo params')
+        //                 console.log(params)
+        //                 const data = await docClient.scan(params).promise()
+        //                 return data.Items
 
-//             }, {
-//                 name: 'list-nodes',
-//                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-//                 access: [(fn: Lambda.Function) => notesTable.grantReadData(fn)]
-//             })
-//             .end()
+        //             }, {
+        //                 name: 'list-nodes',
+        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
+        //                 access: [(fn: Lambda.Function) => notesTable.grantReadData(fn)]
+        //             })
+        //             .end()
 
-//         this.mutation('createNote')
-//             // @ts-ignore    
-//             .fn(async function (event) {
-//                 console.log(event)
-//                 const AWS = require('aws-sdk')
-//                 const docClient = new AWS.DynamoDB.DocumentClient()
-//                 const note = event.arguments.note // [x] get from event
-//                 const params = {
-//                     TableName: process.env.NOTES_TABLE,
-//                     Item: note
-//                 }
-//                 await docClient.put(params).promise()
-//                 console.log('note')
-//                 console.log(note)
-//                 return note
-//             }, {
-//                 name: 'create-note',
-//                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-//                 access: [(fn: Lambda.Function) => notesTable.grantWriteData(fn)]
-//             })
-//             .end()
+        //         this.mutation('createNote')
+        //             // @ts-ignore    
+        //             .fn(async function (event) {
+        //                 console.log(event)
+        //                 const AWS = require('aws-sdk')
+        //                 const docClient = new AWS.DynamoDB.DocumentClient()
+        //                 const note = event.arguments.note // [x] get from event
+        //                 const params = {
+        //                     TableName: process.env.NOTES_TABLE,
+        //                     Item: note
+        //                 }
+        //                 await docClient.put(params).promise()
+        //                 console.log('note')
+        //                 console.log(note)
+        //                 return note
+        //             }, {
+        //                 name: 'create-note',
+        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
+        //                 access: [(fn: Lambda.Function) => notesTable.grantWriteData(fn)]
+        //             })
+        //             .end()
 
-//         this.mutation('deleteNote')
-//             // @ts-ignore
-//             .fn(async function (event) {
-//                 console.log(event)
-//                 const AWS = require('aws-sdk')
-//                 const docClient = new AWS.DynamoDB.DocumentClient()
-//                 const noteId = event.arguments.noteId // [x] get from event
-//                 const params = {
-//                     TableName: process.env.NOTES_TABLE,
-//                     Key: {
-//                         id: noteId
-//                     }
-//                 }
-//                 await docClient.delete(params).promise()
-//                 return noteId
-//             }, {
-//                 name: 'delete-note',
-//                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-//                 access: [(fn: Lambda.Function) => notesTable.grantWriteData(fn)]
-//             })
-//             .end()
+        //         this.mutation('deleteNote')
+        //             // @ts-ignore
+        //             .fn(async function (event) {
+        //                 console.log(event)
+        //                 const AWS = require('aws-sdk')
+        //                 const docClient = new AWS.DynamoDB.DocumentClient()
+        //                 const noteId = event.arguments.noteId // [x] get from event
+        //                 const params = {
+        //                     TableName: process.env.NOTES_TABLE,
+        //                     Key: {
+        //                         id: noteId
+        //                     }
+        //                 }
+        //                 await docClient.delete(params).promise()
+        //                 return noteId
+        //             }, {
+        //                 name: 'delete-note',
+        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
+        //                 access: [(fn: Lambda.Function) => notesTable.grantWriteData(fn)]
+        //             })
+        //             .end()
 
-//         this.mutation('updateNote')
-//             // @ts-ignore
-//             .fn(async function (event) {
-//                 console.log(event)
-//                 const AWS = require('aws-sdk')
-//                 const docClient = new AWS.DynamoDB.DocumentClient()
-//                 const note = event.arguments.note // [x] get from event
-//                 let params = {
-//                     TableName: process.env.NOTES_TABLE,
-//                     Key: {
-//                         id: note.id
-//                     },
-//                     ExpressionAttributeValues: {},
-//                     ExpressionAttributeNames: {},
-//                     UpdateExpression: "",
-//                     ReturnValues: "UPDATED_NEW"
-//                 }
-//                 let prefix = "set "
-//                 let attributes = Object.keys(note)
-//                 for (let i = 0; i < attributes.length; i++) {
-//                     let attribute = attributes[i]
-//                     if (attribute !== "id") {
-//                         params["UpdateExpression"] += prefix + "#" + attribute + " = :" + attribute
-//                         // @ts-ignore
-//                         params["ExpressionAttributeValues"][":" + attribute] = note[attribute]
-//                         // @ts-ignore
-//                         params["ExpressionAttributeNames"]["#" + attribute] = attribute
-//                         prefix = ", "
-//                     }
-//                 }
-//                 console.log('params: ', params)
+        //         this.mutation('updateNote')
+        //             // @ts-ignore
+        //             .fn(async function (event) {
+        //                 console.log(event)
+        //                 const AWS = require('aws-sdk')
+        //                 const docClient = new AWS.DynamoDB.DocumentClient()
+        //                 const note = event.arguments.note // [x] get from event
+        //                 let params = {
+        //                     TableName: process.env.NOTES_TABLE,
+        //                     Key: {
+        //                         id: note.id
+        //                     },
+        //                     ExpressionAttributeValues: {},
+        //                     ExpressionAttributeNames: {},
+        //                     UpdateExpression: "",
+        //                     ReturnValues: "UPDATED_NEW"
+        //                 }
+        //                 let prefix = "set "
+        //                 let attributes = Object.keys(note)
+        //                 for (let i = 0; i < attributes.length; i++) {
+        //                     let attribute = attributes[i]
+        //                     if (attribute !== "id") {
+        //                         params["UpdateExpression"] += prefix + "#" + attribute + " = :" + attribute
+        //                         // @ts-ignore
+        //                         params["ExpressionAttributeValues"][":" + attribute] = note[attribute]
+        //                         // @ts-ignore
+        //                         params["ExpressionAttributeNames"]["#" + attribute] = attribute
+        //                         prefix = ", "
+        //                     }
+        //                 }
+        //                 console.log('params: ', params)
 
-//                 await docClient.update(params).promise()
-//                 return note
+        //                 await docClient.update(params).promise()
+        //                 return note
 
-//             }, {
-//                 name: 'update-note',
-//                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
-//                 access: [(fn: Lambda.Function) => notesTable.grantWriteData(fn)]
-//             })
-//             .end()
+        //             }, {
+        //                 name: 'update-note',
+        //                 env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
+        //                 access: [(fn: Lambda.Function) => notesTable.grantWriteData(fn)]
+        //             })
+        //             .end()
 
-//         this.query('listUserItems')
-//             .http({ url: 'https://hyv8xaaj80.execute-api.us-east-2.amazonaws.com/dev', method: 'get' })
-//             .requestMapping(`{
-//     "version": "2018-05-29",
-//     "method": "GET",
-//     "params": {
-//         "headers": {
-//             "Content-Type": "application/json"
-//         }
-//     },
-//     "resourcePath": "/users"
-// }`)
-//             .responseMapping(`## return the body
-// #if($ctx.result.statusCode == 200)
-//     ##if response is 200
-//     $ctx.result.body
-// #else
-//     ##if response is not 200, append the response to error block.
-//     $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
-// #end`)
-//             .end()
+        //         this.query('listUserItems')
+        //             .http({ url: 'https://hyv8xaaj80.execute-api.us-east-2.amazonaws.com/dev', method: 'get' })
+        //             .requestMapping(`{
+        //     "version": "2018-05-29",
+        //     "method": "GET",
+        //     "params": {
+        //         "headers": {
+        //             "Content-Type": "application/json"
+        //         }
+        //     },
+        //     "resourcePath": "/users"
+        // }`)
+        //             .responseMapping(`## return the body
+        // #if($ctx.result.statusCode == 200)
+        //     ##if response is 200
+        //     $ctx.result.body
+        // #else
+        //     ##if response is not 200, append the response to error block.
+        //     $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
+        // #end`)
+        //             .end()
 
 
     }
@@ -358,7 +358,7 @@ export class GraphQLConstruct extends Construct {
         let sgs
         if (options.vpc) {
             vpc = options.vpc as EC2.Vpc
-            sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG', 'default', options.vpc)]
+            sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG-' + options.name, 'default', options.vpc)]
             //  sgs = Array.isArray(options.securityGroupIds) ? options.securityGroupIds
             //     .map(sgId => EC2.SecurityGroup.fromSecurityGroupId(this, 'sgid', sgId)) : []
             console.log('sgids', options.securityGroupIds)

@@ -3,9 +3,8 @@ import * as DaxClient from 'amazon-dax-client'
 
 import {
     Stack, StackProps,
-    aws_dynamodb as DynamoDB,
     aws_lambda as Lambda,
-    aws_ec2 as EC2,
+    aws_iam as IAM,
     RemovalPolicy,
     CfnOutput,
     Duration,
@@ -18,6 +17,7 @@ import { GraphQLConstruct } from './graphql/graphql-builder-construct'
 import { DynamoCostruct } from './dynamodb/dynamo-construct'
 import { ApiBuilderConstruct } from './rest-api/api-builder-construct'
 import { WebAppConstruct } from './webapp/webapp-construct'
+import { ApiGateway } from 'aws-cdk-lib/aws-events-targets'
 
 // const output = 
 interface FullDemoStackProps extends StackProps {
@@ -91,6 +91,74 @@ export class FullDemoStack extends Stack {
             },
             access: [
                 (fn: Lambda.Function) => db.table.grantReadData(fn),
+                (fn: Lambda.Function) => {
+                    // db.table.grantReadData(fn)
+                    // https://aws.amazon.com/blogs/database/how-to-increase-performance-while-reducing-costs-by-using-amazon-dynamodb-accelerator-dax-and-aws-lambda/
+                    fn.addToRolePolicy(new IAM.PolicyStatement({
+                        actions: ['dax:PutItem', 'dax:GetItem', 'dax:Scan'],
+                        effect: IAM.Effect.ALLOW,
+                        resources: [db.daxCache.attrArn]
+                    }))
+                },
+
+            ],
+            layers: [daxLayer],
+            vpc: 'default'
+        })
+
+        api.get('/items/{partition}/{sort}', async function (event) {
+            // [ ] get item from aws
+            const aws = require('aws-sdk')
+            // const DaxClient = require('amazon-dax-client')
+            const { log, error } = console
+
+            log(JSON.stringify(event, undefined, 2))
+            
+            if (!process.env.TABLE_NAME) throw new Error('TABLE_NAME must be specified on lambda env variables')
+            if (!process.env.DAX_URL) throw new Error('DAX_URL must be specified on lambda env variables')
+            
+            // const dax = new DaxClient({ endpoints: [process.env.DAX_URL] })
+            const dynamo = new aws.DynamoDB.DocumentClient({ 
+                region: process.env.region, 
+                // service: dax 
+            })
+            
+            const { partition, sort } = event.pathParameters
+            const params = {
+                TableName: process.env.TABLE_NAME,
+                Key:  { partition, sort },
+            }
+            log(params)
+            const res = await dynamo.get(params).promise()
+
+            return {
+                statusCode: 200,
+                body: JSON.stringify(res.Item),
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Headers": "Content-Type",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,PATCH"
+                },
+            }
+        }, {
+            name: 'get-item',
+            env: {
+                ...props.env,
+                TABLE_NAME: db.table.tableName,
+                DAX_URL: db.daxCache.attrClusterDiscoveryEndpointUrl,
+            },
+            access: [
+                (fn: Lambda.Function) => db.table.grantReadData(fn),
+                (fn: Lambda.Function) => {
+                    // https://aws.amazon.com/blogs/database/how-to-increase-performance-while-reducing-costs-by-using-amazon-dynamodb-accelerator-dax-and-aws-lambda/
+                    fn.addToRolePolicy(new IAM.PolicyStatement({
+                        actions: ['dax:PutItem', 'dax:GetItem', 'dax:Scan'],
+                        effect: IAM.Effect.ALLOW,
+                        resources: [db.daxCache.attrArn]
+                    }))
+                },
+
             ],
             layers: [daxLayer],
             vpc: 'default'
@@ -137,4 +205,12 @@ export class FullDemoStack extends Stack {
 
     }
 }
+
+
+
+
+// todo
+// [ ] what the model looks like
+
+
 

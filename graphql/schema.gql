@@ -36,6 +36,6 @@ type Mutation {
 }
 
 type Subscription {
-  onCreateNote(id:ID): Note
+  onCreateNote(tenet:ID): Note
   @aws_subscribe(mutations:["createNote"])
 }

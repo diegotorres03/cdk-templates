@@ -8,6 +8,7 @@ import { GraphQLStack } from '../lib/graphql-stack'
 import { WebAppStack } from '../lib/webapp-stack'
 import { TestApiForGQLStack } from '../lib/test-rest-api-for-graphql-stack'
 import { FullDemoStack } from '../lib/full-demo-stack'
+import { ChandraDemoStack } from '../lib/chandra-video-stack'
 
 ////////////////////////////////////////////////////////////
 
@@ -63,6 +64,6 @@ new FullDemoStack(app, 'full-demo', {
 // gqlApi.createApi()
 // .schema('./graphql/schema.gql')
 
-
-
+// publishing a video for Chandra // delete on nov 15
+new ChandraDemoStack(app, 'chandra-stack')
 
