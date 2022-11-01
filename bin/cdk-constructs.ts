@@ -50,8 +50,8 @@ const subnetIds = ["subnet-a66de6cd", "subnet-a65392db", "subnet-055f7749"]
 
 // const testRest = new TestApiForGQLStack(app, 'test-rest-gql', { env })
 
-new WebAppStack(app, 'gql-webapp', {
-  assetsPath: './webapp-gql-test/dist',
+new WebAppStack(app, 'webapp', {
+  assetsPath: './webapp',
   env,
 })
 
