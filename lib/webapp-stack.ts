@@ -14,6 +14,8 @@ import {
 import { Construct } from 'constructs'
 
 import { WebAppConstruct } from './webapp/webapp-construct'
+import { PipeConstruct } from './pipeline/pipe-construct'
+import { pipeline } from 'stream'
 
 
 // define properties for webapp stack
@@ -27,6 +29,11 @@ export interface WebappProps extends StackProps {
 export class WebAppStack extends Stack {
     constructor(scope: Construct, id: string, props: WebappProps) {
         super(scope, id, props)
+
+        const pipe = new PipeConstruct(this, 'webapp-pipe')
+
+        // const repopipe.createCodeRepo()
+
 
         const webapp = new WebAppConstruct(this, 'webapp')
         webapp.addAssets(props.assetsPath)

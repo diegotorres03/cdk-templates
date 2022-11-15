@@ -14,6 +14,7 @@ import {
 import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
+import { FunctionConstruct, FunctionOptions } from '../lambda/function-construct'
 
 /**
  * @typedef {Object} LambdaDef
@@ -40,9 +41,7 @@ export class ApiBuilderConstruct extends Construct {
 
 
     createApi(apiName: string) {
-        console.log('creating api <(*.*<)')
-        let method = null
-        let path = null
+        // console.log('creating api <(*.*<)')
         const api = new ApiGateway.RestApi(this, apiName, {
             deployOptions: { stageName: process.env.STAGE || 'dev' },
             defaultCorsPreflightOptions: {
@@ -103,16 +102,12 @@ export class ApiBuilderConstruct extends Construct {
      * @param {LambdaDef} LambdaDef 
      * @returns 
      */
-    createLambda(functionCode: Function, options: {
-        name: string,
-        env: any,
-        access: Function[],
-        vpc: EC2.Vpc | string,
-        securityGroupIds: string[],
-        layers?: Lambda.ILayerVersion[]
-    }) {
+    createLambda(functionCode: Function, options: FunctionOptions) {
         if (!options.name) throw new Error('name is required')
+        const lambda = new FunctionConstruct(this, options.name)
 
+
+        return lambda
         let vpc
         let sgs
         if (options.vpc) {
@@ -158,7 +153,7 @@ export class ApiBuilderConstruct extends Construct {
         // console.log('\n\nlambda params')
         // console.log(lambdaParams)
 
-        const lambda = new Lambda.Function(this, options.name, lambdaParams)
+        // const lambda = new Lambda.Function(this, options.name, lambdaParams)
 
         if (options && Array.isArray(options.access)) {
             options.access.forEach(fn => fn(lambda))

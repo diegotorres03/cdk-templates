@@ -113,20 +113,20 @@ export class FullDemoStack extends Stack {
             const { log, error } = console
 
             log(JSON.stringify(event, undefined, 2))
-            
+
             if (!process.env.TABLE_NAME) throw new Error('TABLE_NAME must be specified on lambda env variables')
             if (!process.env.DAX_URL) throw new Error('DAX_URL must be specified on lambda env variables')
-            
+
             // const dax = new DaxClient({ endpoints: [process.env.DAX_URL] })
-            const dynamo = new aws.DynamoDB.DocumentClient({ 
-                region: process.env.region, 
+            const dynamo = new aws.DynamoDB.DocumentClient({
+                region: process.env.region,
                 // service: dax 
             })
-            
+
             const { partition, sort } = event.pathParameters
             const params = {
                 TableName: process.env.TABLE_NAME,
-                Key:  { partition, sort },
+                Key: { partition, sort },
             }
             log(params)
             const res = await dynamo.get(params).promise()

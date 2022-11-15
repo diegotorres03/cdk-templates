@@ -1,0 +1,37 @@
+
+type PatientData {
+    tenentId: ID!
+    resource: ID
+    Data: String
+}
+
+input PatientDataInput {
+    tenentId: ID!
+    resource: ID
+    Data: String
+}
+
+type PatientKey {
+    tenentId: ID!
+    resource: ID!
+}
+
+input PatientKeyInput {
+    tenentId: ID!
+    resource: ID!
+}
+
+type Query {
+    listPatients(tenentId: ID): [PatientData]
+    getPatient(key: PatientKeyInput): PatientData
+}
+
+type Mutation {
+    createPatient(resource: PatientDataInput!): PatientData
+}
+
+type Subscription {
+    onCreatePatient(patientFilter: PatientDataInput): PatientData
+    @aws_subscribe(mutations:["createPatient"])
+}
+

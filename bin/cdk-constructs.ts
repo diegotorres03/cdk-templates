@@ -9,6 +9,7 @@ import { WebAppStack } from '../lib/webapp-stack'
 import { TestApiForGQLStack } from '../lib/test-rest-api-for-graphql-stack'
 import { FullDemoStack } from '../lib/full-demo-stack'
 import { ChandraDemoStack } from '../lib/chandra-video-stack'
+import { MedStack } from '../lib/med-stack'
 
 ////////////////////////////////////////////////////////////
 
@@ -46,7 +47,7 @@ const subnetIds = ["subnet-a66de6cd", "subnet-a65392db", "subnet-055f7749"]
 // const s3TagBucket = new S3AITagStack(app, 's3-ai-tag', {})
 
 
-// const gqlApi = new GraphQLStack(app, 'gql-api')
+const gqlApi = new GraphQLStack(app, 'gql-api')
 
 // const testRest = new TestApiForGQLStack(app, 'test-rest-gql', { env })
 
@@ -66,4 +67,6 @@ new FullDemoStack(app, 'full-demo', {
 
 // publishing a video for Chandra // delete on nov 15
 new ChandraDemoStack(app, 'chandra-stack')
+
+new MedStack(app, 'med-stack')
 

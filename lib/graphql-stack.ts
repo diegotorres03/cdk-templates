@@ -34,10 +34,10 @@ export class GraphQLStack extends Stack {
         })
 
 
-    
+
         const gql = new GraphQLConstruct(this, 'test-api')
 
-        gql.createApi('./graphql/schema.gql')
+        gql.createApi('demo-api', './graphql/schema.gql')
 
         gql.query('getNoteById')
             // @ts-ignore
@@ -61,23 +61,20 @@ export class GraphQLStack extends Stack {
             .responseMapping('TODO: response mapping here')
             .end()
 
-            
+
         /////////////////////
         // [ ] this is the desired way to use
         gql.query('listNotes')
             .pipe({})
-            .fn('fn1')
-            .fn('fn2')
-            .fn('fn3')
-            .fn('fn4')
-            .endPipe()
-            // .fn(fn, opts)
-            // .http({method: 'get', url: 'https://endpoint.com:port/path'})
-            // .end()
-
-
-        gql.query('listNotes')
-            // @ts-ignore
+            .fn(function (event) {
+                console.log(JSON.stringify(event, undefined, 2))
+                const now = Date.now()
+                if(now % 2 === 0) return new Error('test error')
+                return {
+                    step1: 'done',
+                    now
+                }
+            }, { name: 'step_1' })
             .fn(async function (event) {
                 console.log(event)
                 const AWS = require('aws-sdk')
@@ -97,18 +94,41 @@ export class GraphQLStack extends Stack {
             })
             .end()
 
+        // ---------
+
+        // gql.query('listNotes')
+        //     // @ts-ignore
+        //     .fn(async function (event) {
+        //         console.log(event)
+        //         const AWS = require('aws-sdk')
+        //         const docClient = new AWS.DynamoDB.DocumentClient()
+        //         const params = {
+        //             TableName: process.env.NOTES_TABLE,
+        //         }
+        //         console.log('dynamo params')
+        //         console.log(params)
+        //         const data = await docClient.scan(params).promise()
+        //         return data.Items
+
+        //     }, {
+        //         name: 'list-nodes',
+        //         env: { ...props?.env, NOTES_TABLE: notesTable.tableName },
+        //         access: [(fn: Lambda.Function) => notesTable.grantReadData(fn)]
+        //     })
+        //     .end()
+
         gql.mutation('createNote')
             // @ts-ignore    
             .fn(async function (event) {
                 console.log(event)
                 const AWS = require('aws-sdk')
-                const docClient = new AWS.DynamoDB.DocumentClient()
-                const note = event.arguments.note // [x] get from event
+                const dynamo = new AWS.DynamoDB.DocumentClient()
+                const note = event.arguments.note
                 const params = {
                     TableName: process.env.NOTES_TABLE,
                     Item: note
                 }
-                await docClient.put(params).promise()
+                await dynamo.put(params).promise()
                 console.log('note')
                 console.log(note)
                 return note
@@ -183,27 +203,27 @@ export class GraphQLStack extends Stack {
             })
             .end()
 
-        gql.query('listUserItems')
-            .http({ url: 'https://hyv8xaaj80.execute-api.us-east-2.amazonaws.com/dev', method: 'get' })
-            .requestMapping(`{
-    "version": "2018-05-29",
-    "method": "GET",
-    "params": {
-        "headers": {
-            "Content-Type": "application/json"
-        }
-    },
-    "resourcePath": "/users"
-}`)
-            .responseMapping(`## return the body
-#if($ctx.result.statusCode == 200)
-    ##if response is 200
-    $ctx.result.body
-#else
-    ##if response is not 200, append the response to error block.
-    $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
-#end`)
-            .end()
+        //         gql.query('listUserItems')
+        //             .http({ url: 'https://hyv8xaaj80.execute-api.us-east-2.amazonaws.com/dev', method: 'get' })
+        //             .requestMapping(`{
+        //     "version": "2018-05-29",
+        //     "method": "GET",
+        //     "params": {
+        //         "headers": {
+        //             "Content-Type": "application/json"
+        //         }
+        //     },
+        //     "resourcePath": "/users"
+        // }`)
+        //             .responseMapping(`## return the body
+        // #if($ctx.result.statusCode == 200)
+        //     ##if response is 200
+        //     $ctx.result.body
+        // #else
+        //     ##if response is not 200, append the response to error block.
+        //     $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
+        // #end`)
+        //             .end()
 
 
     }

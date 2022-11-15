@@ -28,4 +28,4 @@ rule method_must_have_integration_mock when %mock_method {
             RequestTemplates exists
         }
     }
-}  
+}

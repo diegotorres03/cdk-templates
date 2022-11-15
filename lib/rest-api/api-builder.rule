@@ -12,7 +12,6 @@ rule method_must_have_integration when %method !empty {
     }
 }
 
-
 let lambda_method = Resources.*[ 
     Type == 'AWS::ApiGateway::Method'
     Properties.Integration.Type == 'AWS_PROXY'
@@ -25,12 +24,13 @@ rule method_must_have_integration_lambda when %lambda_method !empty {
             Uri exists
         }
     }
-}   
+}
 
 let mock_method = Resources.*[ 
     Type == 'AWS::ApiGateway::Method'
     Properties.Integration.Type == 'MOCK'
 ]
+
 rule method_must_have_integration_mock when %mock_method !empty {
     %mock_method.Properties {
         Integration {
@@ -39,7 +39,7 @@ rule method_must_have_integration_mock when %mock_method !empty {
             RequestTemplates exists
         }
     }
-}  
+}
 
 
 let apiAccount = Resources.*[ Type == 'AWS::ApiGateway::Account']
