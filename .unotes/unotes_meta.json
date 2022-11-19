@@ -1,0 +1,68 @@
+{
+  "name": "",
+  "isOrdered": true,
+  "folders": {
+    "bin": {
+      "name": "bin",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "graphql": {
+      "name": "graphql",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "layers": {
+      "name": "layers",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "lib": {
+      "name": "lib",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "med-webapp": {
+      "name": "med-webapp",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "test": {
+      "name": "test",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "webapp": {
+      "name": "webapp",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "webapp-demo": {
+      "name": "webapp-demo",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "webapp-gql-test": {
+      "name": "webapp-gql-test",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    }
+  },
+  "files": {
+    "ab1-kevin": 0,
+    "README": 1,
+    "aga-demo": 2,
+    "cfn-feedback-cat-digital": 3,
+    "matt-ab1": 4,
+    "opensearch-poc": 5
+  }
+}
