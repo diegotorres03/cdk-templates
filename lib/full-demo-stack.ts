@@ -49,6 +49,9 @@ export class FullDemoStack extends Stack {
         // [ ] create rest api
         const apiBuilder = new ApiBuilderConstruct(this, 'rest-api')
         const api = apiBuilder.createApi('rest-api-demo')
+        
+        // const swaggerFile = {}
+        // api.createApi(swaggerFile)
 
         const daxLayer = apiBuilder.createLayer('full-demo-node_modules', './layers/dax')
 

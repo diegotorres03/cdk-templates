@@ -34,9 +34,8 @@ export class WebAppStack extends Stack {
 
         // const repopipe.createCodeRepo()
 
-
         const webapp = new WebAppConstruct(this, 'webapp')
-        webapp.addAssets(props.assetsPath)
+        webapp.addAssets('./path/to/app')
 
     }
 }

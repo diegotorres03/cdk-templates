@@ -14,7 +14,6 @@ import {
 import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-import { FunctionConstruct, FunctionOptions } from '../lambda/function-construct'
 
 /**
  * @typedef {Object} LambdaDef
@@ -41,7 +40,9 @@ export class ApiBuilderConstruct extends Construct {
 
 
     createApi(apiName: string) {
-        // console.log('creating api <(*.*<)')
+        console.log('creating api <(*.*<)')
+        let method = null
+        let path = null
         const api = new ApiGateway.RestApi(this, apiName, {
             deployOptions: { stageName: process.env.STAGE || 'dev' },
             defaultCorsPreflightOptions: {
@@ -102,12 +103,16 @@ export class ApiBuilderConstruct extends Construct {
      * @param {LambdaDef} LambdaDef 
      * @returns 
      */
-    createLambda(functionCode: Function, options: FunctionOptions) {
+    createLambda(functionCode: Function, options: {
+        name: string,
+        env: any,
+        access: Function[],
+        vpc: EC2.Vpc | string,
+        securityGroupIds: string[],
+        layers?: Lambda.ILayerVersion[]
+    }) {
         if (!options.name) throw new Error('name is required')
-        const lambda = new FunctionConstruct(this, options.name)
 
-
-        return lambda
         let vpc
         let sgs
         if (options.vpc) {
@@ -117,8 +122,8 @@ export class ApiBuilderConstruct extends Construct {
             sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG-' + options.name, 'default', vpc)]
             //  sgs = Array.isArray(options.securityGroupIds) ? options.securityGroupIds
             //     .map(sgId => EC2.SecurityGroup.fromSecurityGroupId(this, 'sgid', sgId)) : []
-            // console.log('sgids', options.securityGroupIds)
-            // console.log(sgs)
+            console.log('sgids', options.securityGroupIds)
+            console.log(sgs)
         }
 
 
@@ -126,14 +131,14 @@ export class ApiBuilderConstruct extends Construct {
         let code
 
         if (functionCodeStr.includes('exports.handler = ')) {
-            // console.log('full function')
+            console.log('full function')
             code = `(${functionCodeStr})()`
         } else {
-            // console.log('handler function')
+            console.log('handler function')
             code = `(function() {
                 exports.handler = ${functionCodeStr}
             })()`
-            // console.log(code)
+            console.log(code)
         }
 
         const lambdaParams = {
@@ -153,7 +158,7 @@ export class ApiBuilderConstruct extends Construct {
         // console.log('\n\nlambda params')
         // console.log(lambdaParams)
 
-        // const lambda = new Lambda.Function(this, options.name, lambdaParams)
+        const lambda = new Lambda.Function(this, options.name, lambdaParams)
 
         if (options && Array.isArray(options.access)) {
             options.access.forEach(fn => fn(lambda))
