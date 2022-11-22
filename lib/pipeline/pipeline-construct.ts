@@ -154,7 +154,7 @@ export class PipeConstruct extends Construct {
      * use it to make an step optional
      * @since 11/19/2022
      * @param {Function} [handler]
-     * @return {*} 
+     * @return {PipeConstruct} 
      * @memberof PipeConstruct
      */
     skip(handler?: Function) {
