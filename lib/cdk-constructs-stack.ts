@@ -27,10 +27,16 @@ export class CdkConstructsStack extends cdk.Stack {
       .build({
         version: '0.2',
         phases: {
-          // install: {
-          //   'runtime-versions'
-          // },
-          pre_build: { commands: ['npm i -g aws-cdk@2.49.0', 'npm i'] },
+          install: {
+            'runtime-versions': {
+              // 'python': '3.10',
+              'nodejs': '16',
+              // 'java': 'corretto17',
+              // 'dotnet': '6.0'
+            },
+            commands: ['npm i -g aws-cdk@2.49.0', 'npm i']
+          },
+          pre_build: {},
           build: { commands: ['cdk deploy --all'] },
           post_build: {},
         }
