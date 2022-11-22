@@ -2,6 +2,7 @@ import {
     Stack,
     StackProps,
     aws_s3 as S3,
+    aws_iam as IAM,
     aws_codeartifact as CodeArtifact,
     aws_codepipeline as CodePipeline,
     aws_codecommit as CodeCommit,
@@ -112,7 +113,7 @@ export class PipeConstruct extends Construct {
             buildSpec: CodeBuild.BuildSpec.fromObject(buildSpecJson),
             environment: {
                 buildImage: LinuxBuildImage.STANDARD_6_0,
-            } 
+            }
         }
 
         if (options && options.s3Bucket) {
@@ -124,13 +125,12 @@ export class PipeConstruct extends Construct {
         }
 
         // const buildProject = new CodeBuild.Project(this, 'Build-project-' + count, buildProjectParams)
-        
+
         const buildProject = new CodeBuild.Project(this, 'Build-project-' + count, {
             buildSpec: CodeBuild.BuildSpec.fromObject(buildSpecJson),
             environment: {
                 buildImage: LinuxBuildImage.STANDARD_6_0,
-            } 
-                
+            },
         })
 
 
@@ -140,6 +140,12 @@ export class PipeConstruct extends Construct {
             project: buildProject,
             input: this.sourceOutput,
             outputs: [new CodePipeline.Artifact()],
+        }))
+
+        buildProject.addToRolePolicy(new IAM.PolicyStatement({
+            actions: ["cloudformation:DescribeStacks"],
+            resources: ["*"],
+            effect: IAM.Effect.ALLOW,
         }))
 
 
