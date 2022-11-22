@@ -263,7 +263,6 @@ export class GraphQLConstruct extends Construct {
       const steps = [] as { lambda: Lambda.Function, invokeLambdaRole: IAM.Role, dataSource: AppSync.CfnDataSource }[]
       const handlers = {
         fn: (inlineFn: Function, options?: any) => {
-          console.log('on pipeline lambda handler')
           const lambda = this.createLambda(inlineFn, options)
 
           const { invokeLambdaRole } = this.createLambdaRole(lambda, options)
@@ -277,7 +276,6 @@ export class GraphQLConstruct extends Construct {
           })
 
           if (!pipeContext.lambdas) pipeContext.lambdas = []
-          log('creating datasource', dataSource.name)
           steps.push({ lambda, invokeLambdaRole, dataSource })
           return handlers
         },
@@ -362,20 +360,19 @@ export class GraphQLConstruct extends Construct {
           dataSourceName: localDataSource.name,
           responseMappingTemplate: mappingTemplate,
           requestMappingTemplate: `
-          #**
-          Resolvers with None data sources can locally publish events that fire
-          subscriptions or otherwise transform data without hitting a backend data source.
-          The value of 'payload' is forwarded to $ctx.result in the response mapping template.
-          *#
-          {
-              "version": "2017-02-28",
-              "payload": {
-                  "hello": "local",
-              }
-          }`
+            #**
+            Resolvers with None data sources can locally publish events that fire
+            subscriptions or otherwise transform data without hitting a backend data source.
+            The value of 'payload' is forwarded to $ctx.result in the response mapping template.
+            *#
+            {
+                "version": "2017-02-28",
+                "payload": {
+                    "hello": "local",
+                }
+            }`
         } as AppSync.CfnResolverProps
 
-        log(resolverParams)
 
         const resolver = new AppSync.CfnResolver(this, `filter-resolver-${fieldName}-${type}`, resolverParams)
         resolver.addDependsOn(localDataSource)

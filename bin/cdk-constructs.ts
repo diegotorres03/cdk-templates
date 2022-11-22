@@ -10,6 +10,7 @@ import { TestApiForGQLStack } from '../lib/test-rest-api-for-graphql-stack'
 import { FullDemoStack } from '../lib/full-demo-stack'
 import { ChandraDemoStack } from '../lib/chandra-video-stack'
 import { MedStack } from '../lib/med-stack'
+import { PipelineTestStack } from '../lib/pipeline-test-stack'
 
 ////////////////////////////////////////////////////////////
 
@@ -70,3 +71,5 @@ new ChandraDemoStack(app, 'chandra-stack')
 
 new MedStack(app, 'med-stack')
 
+
+// new PipelineTestStack(app, 'webapp-pipeline')

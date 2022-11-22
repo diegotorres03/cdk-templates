@@ -40,7 +40,6 @@ export class ApiBuilderConstruct extends Construct {
 
 
     createApi(apiName: string) {
-        console.log('creating api <(*.*<)')
         let method = null
         let path = null
         const api = new ApiGateway.RestApi(this, apiName, {
@@ -60,15 +59,12 @@ export class ApiBuilderConstruct extends Construct {
         const apiUrl = new CfnOutput(this, 'apiUrl', { value: api.url })
 
         const requestHandler = (method: string) => (path: string, lambdaCode: Function, options: any) => {
-            console.log(`creating ${method} <(*.*<)`)
 
 
             const lambda = this.createLambda(lambdaCode, options)
 
             if (Array.isArray(options.layers))
                 options.layers.forEach((layer: Lambda.LayerVersion) => lambda.addLayers(layer))
-
-            console.log('adding path', path)
 
             api.root.resourceForPath(path)
                 // api.root.addResource(path)
@@ -122,8 +118,6 @@ export class ApiBuilderConstruct extends Construct {
             sgs = [EC2.SecurityGroup.fromLookupByName(this, 'defaultSG-' + options.name, 'default', vpc)]
             //  sgs = Array.isArray(options.securityGroupIds) ? options.securityGroupIds
             //     .map(sgId => EC2.SecurityGroup.fromSecurityGroupId(this, 'sgid', sgId)) : []
-            console.log('sgids', options.securityGroupIds)
-            console.log(sgs)
         }
 
 
@@ -131,14 +125,11 @@ export class ApiBuilderConstruct extends Construct {
         let code
 
         if (functionCodeStr.includes('exports.handler = ')) {
-            console.log('full function')
             code = `(${functionCodeStr})()`
         } else {
-            console.log('handler function')
             code = `(function() {
                 exports.handler = ${functionCodeStr}
             })()`
-            console.log(code)
         }
 
         const lambdaParams = {
@@ -155,8 +146,6 @@ export class ApiBuilderConstruct extends Construct {
         } as Lambda.FunctionProps
 
 
-        // console.log('\n\nlambda params')
-        // console.log(lambdaParams)
 
         const lambda = new Lambda.Function(this, options.name, lambdaParams)
 
@@ -168,7 +157,6 @@ export class ApiBuilderConstruct extends Construct {
     }
 
     createLayer(name: string, path: string) {
-        console.info(`creating layer ${name} using ${path}`)
         const layer = new Lambda.LayerVersion(this, name, {
             removalPolicy: RemovalPolicy.DESTROY,
             code: Lambda.Code.fromAsset(path), // './layers/dax'

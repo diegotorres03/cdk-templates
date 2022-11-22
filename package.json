@@ -5,7 +5,7 @@
     "cdk-constructs": "bin/cdk-constructs.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "echo \"don't\"",
     "watch": "tsc -w",
     "test": "jest",
     "guard-rest": "cfn-guard validate -d ./cdk.out/full-demo.template.json -r ./lib/rest-api/api-builder.rule",

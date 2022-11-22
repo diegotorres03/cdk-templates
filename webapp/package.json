@@ -1,0 +1,24 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": ". ./build.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git-codecommit.us-east-2.amazonaws.com/v1/repos/web-components-library"
+  },
+  "author": "Diego Torres",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-appconfigdata": "^3.213.0",
+    "aws-amplify": "^4.3.43",
+    "aws-crt": "^1.14.7"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.0"
+  }
+}

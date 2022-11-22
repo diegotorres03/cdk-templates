@@ -11,13 +11,15 @@ import {
     CfnOutput,
     RemovalPolicy,
 } from 'aws-cdk-lib'
+import { exec, execSync } from 'child_process'
+import { clear, error, log } from 'console'
 import { Construct } from 'constructs'
 
 
 
 
 export class WebAppConstruct extends Construct {
-    private webappBucket: S3.Bucket
+    webappBucket: S3.Bucket
     constructor(scope: Construct, id: string) {
         super(scope, id)
 
@@ -90,6 +92,22 @@ export class WebAppConstruct extends Construct {
             destinationBucket: this.webappBucket,
             destinationKeyPrefix: destinationPath ? destinationPath : undefined,
         })
+        return webappDeployment
+    }
+
+    run(path:string, commands: string | string[]) {
+        const cmds = Array.isArray(commands) ? commands : [commands]
+        log('111111111111111111111111111111111111111111111111111111111')
+        log('111111111111111111111111111111111111111111111111111111111')
+        for (let cmd of cmds) {
+            const res = execSync(cmd, {
+                cwd: path,
+                stdio: [0, 1, 2]
+              })
+            log(res)
+        }
+        log('111111111111111111111111111111111111111111111111111111111')
+        log('111111111111111111111111111111111111111111111111111111111')
     }
 
 }

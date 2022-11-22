@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
+import { error } from 'console';
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { PipeConstruct } from './pipeline-construct'
+import { PipeConstruct } from './pipeline/pipeline-construct'
 
 export class PipelineTestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -33,6 +34,7 @@ export class PipelineTestStack extends cdk.Stack {
           post_build: {commands: [ 'echo "post build!!"']},
         }
       })
+      .catch(err => pipe.retry(3))
       .build({
         version: '0.2',
         phases: {
@@ -49,11 +51,11 @@ export class PipelineTestStack extends cdk.Stack {
           post_build: {commands: [ 'echo "post build!!"']},
         }
       })
+      .catch(err => {
+        error(err.message)
+        return pipe.skip()
+      })
       .deploy('webapp')
       .deploy('arn:Lambda:fn')
-
-
-
-
   }
 }

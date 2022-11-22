@@ -1,0 +1,9 @@
+{
+  "webapp": {
+    "webappdistributionIdC771E441": "E2K9VBFT55RDI1",
+    "webappwebappBucketName183E3C65": "webapp-webappwebappartifact7d38e61d-yptmfjax2aki",
+    "webappwebappDnsUrl52AC0F7C": "d1ne09s0r79scs.cloudfront.net",
+    "mainpipelinecodeRepoSSH8028438E": "ssh://git-codecommit.us-east-2.amazonaws.com/v1/repos/web-components-library",
+    "mainpipelinecodeRepoHTTPS146A683B": "https://git-codecommit.us-east-2.amazonaws.com/v1/repos/web-components-library"
+  }
+}
