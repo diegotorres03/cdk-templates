@@ -127,9 +127,9 @@ export class PipeConstruct extends Construct {
         
         const buildProject = new CodeBuild.Project(this, 'Build-project-' + count, {
             buildSpec: CodeBuild.BuildSpec.fromObject(buildSpecJson),
-            // environment: {
-            //     buildImage: LinuxBuildImage.STANDARD_6_0,
-            // } 
+            environment: {
+                buildImage: LinuxBuildImage.STANDARD_6_0,
+            } 
                 
         })
 
