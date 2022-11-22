@@ -15,16 +15,31 @@ export class CdkConstructsStack extends cdk.Stack {
     const codeRepo = pipe.createCodeRepository('cdk-constructs')
 
     // [x] create artifact domain.
-    const artifactDomain = pipe.createArtifactDomain('constructs.diegotrs')
+    const artifactDomain = pipe.createArtifactDomain('diegotrs-constructs')
 
     // [x] create artifact repo.
     const artifactRepo = pipe.createArtifactRepository(artifactDomain.domainName, 'cdk-constructs')
     artifactRepo.addDependsOn(artifactDomain)
 
-    // [ ] create .
+    // [ ] create pipeline.
+    pipe.source(codeRepo)
+      // [ ] create pipeline source.
+      .build({
+        version: '0.2',
+        phases: {
+          // install: {
+          //   'runtime-versions'
+          // },
+          pre_build: {commands: ['npm i', ]},
+          build: { commands: ['cdk deploy'] },
+          post_build: {},
+        }
+      })
+    // [ ] create pipeline build.
+
     // [ ] create stack.
     // [ ] .
     // [ ] .
-    
+
   }
 }

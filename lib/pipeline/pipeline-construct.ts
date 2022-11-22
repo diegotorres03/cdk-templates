@@ -73,7 +73,7 @@ export class PipeConstruct extends Construct {
     createCodeRepository(name: string, path?: string) {
         // [ ] create repo
         const codeRepo = new CodeCommit.Repository(this, name, {
-            repositoryName: 'web-components-library',
+            repositoryName: name,
             description: 'public web component repository, usefull for quick PoCs',
             code: path ? CodeCommit.Code.fromDirectory(path) : undefined,
         })

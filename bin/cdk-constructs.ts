@@ -56,28 +56,28 @@ const subnetIds = ["subnet-a66de6cd", "subnet-a65392db", "subnet-055f7749"]
 // const s3TagBucket = new S3AITagStack(app, 's3-ai-tag', {})
 
 
-const gqlApi = new GraphQLStack(app, 'gql-api')
+// const gqlApi = new GraphQLStack(app, 'gql-api')
 
 // const testRest = new TestApiForGQLStack(app, 'test-rest-gql', { env })
 
-new WebAppStack(app, 'webapp', {
-  assetsPath: './webapp',
-  env,
-})
+// new WebAppStack(app, 'webapp', {
+//   assetsPath: './webapp',
+//   env,
+// })
 
-new FullDemoStack(app, 'full-demo', {
-  daxSecurityGroupIds: securityGroupIds,
-  daxSubnetIds: subnetIds,
-  env,
-})
+// new FullDemoStack(app, 'full-demo', {
+//   daxSecurityGroupIds: securityGroupIds,
+//   daxSubnetIds: subnetIds,
+//   env,
+// })
 
 // gqlApi.createApi()
 // .schema('./graphql/schema.gql')
 
 // publishing a video for Chandra // delete on nov 15
-new ChandraDemoStack(app, 'chandra-stack')
+// new ChandraDemoStack(app, 'chandra-stack')
 
-new MedStack(app, 'med-stack')
+// new MedStack(app, 'med-stack')
 
 
 // new PipelineTestStack(app, 'webapp-pipeline')
