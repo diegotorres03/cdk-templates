@@ -123,10 +123,15 @@ export class PipeConstruct extends Construct {
             })
         }
 
-        const buildProject = new CodeBuild.Project(this, 'Build-project-' + count, buildProjectParams)
+        // const buildProject = new CodeBuild.Project(this, 'Build-project-' + count, buildProjectParams)
         
-        // const buildProject = new CodeBuild.Project(this, 'Build-project-' + count, {
-        // })
+        const buildProject = new CodeBuild.Project(this, 'Build-project-' + count, {
+            buildSpec: CodeBuild.BuildSpec.fromObject(buildSpecJson),
+            // environment: {
+            //     buildImage: LinuxBuildImage.STANDARD_6_0,
+            // } 
+                
+        })
 
 
         const buildStage = this.pipeline.addStage({ stageName: 'Build-' + count })
