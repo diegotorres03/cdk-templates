@@ -147,6 +147,12 @@ export class PipeConstruct extends Construct {
             resources: ["*"],
             effect: IAM.Effect.ALLOW,
         }))
+        
+        buildProject.addToRolePolicy(new IAM.PolicyStatement({
+            actions: ["ssm:GetParameter"],
+            resources: ["arn:aws:ssm:us-east-2:760178732320:parameter/cdk-bootstrap/*"],
+            effect: IAM.Effect.ALLOW,
+        }))
 
 
         return this
