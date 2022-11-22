@@ -11,6 +11,7 @@ import { FullDemoStack } from '../lib/full-demo-stack'
 import { ChandraDemoStack } from '../lib/chandra-video-stack'
 import { MedStack } from '../lib/med-stack'
 import { PipelineTestStack } from '../lib/pipeline-test-stack'
+import { CdkConstructsStack } from '../lib/cdk-constructs-stack'
 
 ////////////////////////////////////////////////////////////
 
@@ -20,6 +21,13 @@ const env = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_DEFAUL_REGION || 'us-east-2',
 }
+
+
+// This is the main stack of this repo,
+// [ ] move the other stacks away so this repo is just the base
+new CdkConstructsStack(app, 'cdk-constructs', { env })
+
+
 
 // const defaultVpc = cdk.aws_ec2.Vpc.fromLookup(app, 'default-vpc', { vpcId: 'vpc-9cb3d0f7', region: 'us-east-2' })
 // console.log('defaultVpc', defaultVpc)
