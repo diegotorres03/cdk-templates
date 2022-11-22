@@ -11,6 +11,7 @@ import {
     RemovalPolicy,
     Duration,
 } from 'aws-cdk-lib'
+import { LinuxBuildImage } from 'aws-cdk-lib/aws-codebuild'
 import { count } from 'console'
 import { Construct } from 'constructs'
 
@@ -109,6 +110,9 @@ export class PipeConstruct extends Construct {
 
         const buildProjectParams = {
             buildSpec: CodeBuild.BuildSpec.fromObject(buildSpecJson),
+            environment: {
+                buildImage: LinuxBuildImage.STANDARD_6_0,
+            } 
         }
 
         if (options && options.s3Bucket) {
@@ -120,6 +124,9 @@ export class PipeConstruct extends Construct {
         }
 
         const buildProject = new CodeBuild.Project(this, 'Build-project-' + count, buildProjectParams)
+        
+        // const buildProject = new CodeBuild.Project(this, 'Build-project-' + count, {
+        // })
 
 
         const buildStage = this.pipeline.addStage({ stageName: 'Build-' + count })
