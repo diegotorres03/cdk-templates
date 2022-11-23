@@ -83,15 +83,19 @@ export class CdkConstructsStack extends Stack {
               // 'ls',
 
               'cd lib/dynamodb',
+              'npm version patch',
               'npm publish',
 
               'cd ../graphql',
+              'npm version patch',
               'npm publish',
               
               'cd ../rest-api',
+              'npm version patch',
               'npm publish',
               
               'cd ../webapp',
+              'npm version patch',
               'npm publish',
               
               'echo "this can be the cfn-guard step, just use before the other"',
