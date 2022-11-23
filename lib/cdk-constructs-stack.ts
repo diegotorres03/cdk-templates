@@ -41,6 +41,10 @@ export class CdkConstructsStack extends cdk.Stack {
           post_build: {commands: ['echo "OMFG!! its working \\(*.*)/ "']},
         }
       })
+      .build({
+        version: '0.2',
+        pahses: { build: {commands: ['echo "this can be the cfn-guard step, just use before the other"'] } }
+      })
 
 
 
