@@ -82,10 +82,38 @@ export class CdkConstructsStack extends Stack {
       }, {
         access: [
           (buildProject: CodeBuild.Project) => buildProject.addToRolePolicy(new IAM.PolicyStatement({
-            actions: ["codeartifact:*"],
+            actions: ["codeartifact:GetAuthorizationToken"],
             resources: [`arn:aws:codeartifact:us-east-2:760178732320:domain/${artifactDomain.domainName}`],
             effect: IAM.Effect.ALLOW,
           })),
+
+          (buildProject: CodeBuild.Project) => buildProject.addToRolePolicy(new IAM.PolicyStatement({
+            actions: ['codeartifact:GetRepositoryEndpoint', 'codeartifact:ReadFromRepository'],
+            resources: [`arn:aws:codeartifact:us-east-2:760178732320:domain/${artifactDomain.domainName}/${artifactRepo.repositoryName}`],
+            effect: IAM.Effect.ALLOW,
+          })),
+
+          (buildProject: CodeBuild.Project) => buildProject.addToRolePolicy(new IAM.PolicyStatement({
+            actions: ['codeartifact:PublishPackageVersion', 'codeartifact:PutPackageMetadata'],
+            resources: [`arn:aws:codeartifact:us-east-2:760178732320:domain/${artifactDomain.domainName}/${artifactRepo.repositoryName}/*/*/*`],
+            effect: IAM.Effect.ALLOW,
+          })),
+
+          (buildProject: CodeBuild.Project) => buildProject.addToRolePolicy(new IAM.PolicyStatement({
+            actions: ['sts:GetServiceBearerToken'],
+            resources: [`*`],
+            conditions: {
+              StringEquals: { 'sts:AWSServiceName': 'codeartifact.amazonaws.com' },
+            },
+            effect: IAM.Effect.ALLOW,
+          })),
+
+          (buildProject: CodeBuild.Project) => buildProject.addToRolePolicy(new IAM.PolicyStatement({
+            actions: ['codecommit:GitPull', 'codecommit:GitPush'],
+            resources: [codeRepo.repositoryArn],
+            effect: IAM.Effect.ALLOW,
+          })),
+
         ]
       })
 
