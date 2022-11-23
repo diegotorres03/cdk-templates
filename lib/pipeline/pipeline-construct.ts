@@ -157,6 +157,12 @@ export class PipeConstruct extends Construct {
             effect: IAM.Effect.ALLOW,
         }))
 
+        buildProject.addToRolePolicy(new IAM.PolicyStatement({
+            actions: ["sts:*"],
+            resources: ["arn:aws:iam::760178732320:role/cdk-*"],
+            effect: IAM.Effect.ALLOW,
+        }))
+
 
         return this
     }
