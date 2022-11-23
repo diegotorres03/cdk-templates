@@ -36,15 +36,30 @@ export class CdkConstructsStack extends cdk.Stack {
             },
             commands: ['npm i -g aws-cdk@2.46.0', 'npm i']
           },
-          pre_build: {commands: ['npm --version', 'node --version']},
+          pre_build: { commands: ['npm --version', 'node --version'] },
           build: { commands: ['cdk deploy --all --require-approval never'] },
-          post_build: {commands: ['echo "OMFG!! its working \\(*.*)/  "']},
+          post_build: { commands: ['echo "OMFG!! its working \\(*.*)/  "'] },
         }
       })
       .build({
         version: '0.2',
-        pahses: { build: {commands: ['echo "this can be the cfn-guard step, just use before the other"'] } }
+        pahses: {
+          pre_build: {
+            commands: [
+              `aws codeartifact login --tool npm --domain ${artifactDomain.domainName} --repository ${artifactRepo.repositoryName}`
+            ]
+          },
+          build: {
+            commands: [
+              'cd dynamodb',
+              'npm publish',
+              'echo "this can be the cfn-guard step, just use before the other"',
+            ]
+          }
+        }
       })
+
+    // aws codeartifact login --tool npm --domain my_domain --domain-owner 111122223333 --repository my_repo
 
 
 
