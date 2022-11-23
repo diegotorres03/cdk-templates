@@ -21,9 +21,9 @@ export class CdkConstructsStack extends cdk.Stack {
     const artifactRepo = pipe.createArtifactRepository(artifactDomain.domainName, 'cdk-constructs')
     artifactRepo.addDependsOn(artifactDomain)
 
-    // [ ] create pipeline.
+    // [x] create pipeline.
     pipe.source(codeRepo)
-      // [ ] create pipeline source.
+      // [x] create pipeline source.
       .build({
         version: '0.2',
         phases: {
