@@ -43,7 +43,7 @@ export class CdkConstructsStack extends cdk.Stack {
       })
       .build({
         version: '0.2',
-        pahses: {
+        phases: {
           pre_build: {
             commands: [
               `aws codeartifact login --tool npm --domain ${artifactDomain.domainName} --repository ${artifactRepo.repositoryName}`
