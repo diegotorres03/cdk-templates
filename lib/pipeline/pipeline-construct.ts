@@ -103,8 +103,9 @@ export class PipeConstruct extends Construct {
     }
 
     build(buildSpecJson: any, options?: {
-        s3Bucket: S3.Bucket,
+        s3Bucket?: S3.Bucket,
         path?: string,
+        access?: Function[],
     }) {
         // https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
         const count = this.getBuildCount()
@@ -150,7 +151,7 @@ export class PipeConstruct extends Construct {
             ],
             effect: IAM.Effect.ALLOW,
         }))
-        
+
         buildProject.addToRolePolicy(new IAM.PolicyStatement({
             actions: ["ssm:GetParameter"],
             resources: ["arn:aws:ssm:us-east-2:760178732320:parameter/cdk-bootstrap/*"],
@@ -162,6 +163,7 @@ export class PipeConstruct extends Construct {
             resources: ["arn:aws:iam::760178732320:role/cdk-*"],
             effect: IAM.Effect.ALLOW,
         }))
+
 
 
         return this
