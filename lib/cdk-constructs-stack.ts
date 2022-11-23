@@ -66,7 +66,12 @@ export class CdkConstructsStack extends Stack {
               // `npm config set registry=https://diegotrs-constructs-760178732320.d.codeartifact.us-east-2.amazonaws.com/npm/${artifactRepo.repositoryName}/`,
               `export NPM_TOKEN=\`aws codeartifact get-authorization-token --domain "${artifactDomain.domainName}" --domain-owner "${AWS_ACCOUNT_ID}" --query authorizationToken --output text\``,
               `export NPM_REGISTRY=\`aws codeartifact get-repository-endpoint --domain "${artifactDomain.domainName}" --domain-owner "${AWS_ACCOUNT_ID}" --repository "${artifactRepo.repositoryName}" --format npm --query repositoryEndpoint --output text | sed s~^https://~~\``,
-              'cd dynamodb',
+              'ls',
+              'cd lib/dynamodb',
+              'npm publish',
+              'cd ../graphql',
+              'npm publish',
+              'cd ../rest-api',
               'npm publish',
               'echo "this can be the cfn-guard step, just use before the other"',
             ]
