@@ -144,7 +144,10 @@ export class PipeConstruct extends Construct {
 
         buildProject.addToRolePolicy(new IAM.PolicyStatement({
             actions: ["cloudformation:*"],
-            resources: ["arn:aws:cloudformation:us-east-2:760178732320:stack/cdk-constructs/*"],
+            resources: [
+                "arn:aws:cloudformation:us-east-2:760178732320:stack/cdk-constructs/*",
+                "arn:aws:cloudformation:us-east-2:760178732320:stack/CDKToolkit/*"
+            ],
             effect: IAM.Effect.ALLOW,
         }))
         
