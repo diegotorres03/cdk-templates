@@ -38,7 +38,7 @@ export class CdkConstructsStack extends cdk.Stack {
           },
           pre_build: {commands: ['npm --version', 'node --version']},
           build: { commands: ['cdk deploy --all --require-approval never'] },
-          post_build: {commands: ['echo "OMFG!! its working \\(*.*)/ "']},
+          post_build: {commands: ['echo "OMFG!! its working \\(*.*)/  "']},
         }
       })
       .build({
