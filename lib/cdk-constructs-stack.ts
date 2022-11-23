@@ -75,7 +75,7 @@ export class CdkConstructsStack extends Stack {
       }, {
         access: [
           (buildProject: CodeBuild.Project) => buildProject.addToRolePolicy(new IAM.PolicyStatement({
-            actions: ["codeartifact:GetAuthorizationToken"],
+            actions: ["codeartifact:*"],
             resources: [`arn:aws:codeartifact:us-east-2:760178732320:domain/${artifactDomain.domainName}`],
             effect: IAM.Effect.ALLOW,
           })),
