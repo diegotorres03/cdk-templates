@@ -8,6 +8,7 @@ import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 import { PipeConstruct } from './pipeline/pipeline-construct'
+const { log } = console
 
 
 export class CdkConstructsStack extends Stack {
@@ -29,6 +30,7 @@ export class CdkConstructsStack extends Stack {
     const artifactRepo = pipe.createArtifactRepository(artifactDomain.domainName, 'cdk-constructs')
     artifactRepo.addDependsOn(artifactDomain)
 
+    const NPM_TOKEN = 'eyJ2ZXIiOjEsImlzdSI6MTY2OTY1NDMzMywiZW5jIjoiQTEyOEdDTSIsInRhZyI6ImMxNUU2OVBxMEVGRjFIbC05Mm1OR1EiLCJleHAiOjE2Njk2OTc1MzMsImFsZyI6IkExMjhHQ01LVyIsIml2IjoiaHRuaE9WVE1lLU9scHJCSyJ9.Nfz6Hif3Ee9TiDSjnKGSsw.2wKy77qIstYpjDZz.y-vraOXfu_t_VGCXfoylFS7s6kvCFFNA9ajz207qgyahAs1gMy3pk1PD_kVVYEKaBVgaLFIFX3ofOO9pcpilpBk7eMHyfxncQvd9vTZobi12JgELIW3LH5iNpu6Ihyn4UI3-UfJLPnynhFg2ASXJFfVwruuDjLNTxj6zJk6nl739CjOKW1MiHgC09jbiIH83cOVLaMykDewA6eJCRNhZAIiLUky8tF113gdNgXRB057_4RpgBVnvc7_bzCKfGXW67DOHP80MxojtbzszkgQuhkJRb-2532nyG1NJrvofjLZCxcoljo4FMF8CE3KsM0slob-pkVy4UzxYh-58jCdGXQjy6edMAHXsnDmjE6DJBVPaXKjOFuvq_rOvN58loGzUVVnN0ZWrkwKHsAYnsrd-NscKKgR3wNRvrYTpqNotO_uFZEespetH7I0RNjOBoe2TR7UK4hIVvLl_-oTtaWX--QwlOYj8Eu5fNzxWqlmB02jspDddZU8AUJdtWYUw2wl_OcH4oZ20pDc4TCMx2mwkSUWwRFfFQJNXYkwGiVchRORhOvNWKhcgEGCC51DN-npv2jVnxDl0A4PlEtPHQpHMuZXuN4FftsmJxRTYB0HqpNeG4s_FFnClqOCs4tp1uLDvS4Q--hUEdbqj4kYUoQlKUSqALG6uLetuISTuucq3mFtmNp3FF3iUSEKcVLjcrxetaWP5KEbkLU5LUqZmcBaDStM8a5zHOYSD098XGBPEwmyi4vzsMqAhZbHtYrpYIYhGZu3GVdU0yeROkB2TvAxsiUF7i0baD7gvVrwnzXoydTAMPbLolzfl2WqvOAUm0PckwrdltlCZNPFP8qLLIdAWX4wUsz4BQs2Qs8VKUrqCQ1uqGR9NEyqBxBv4JctTiG6wHNes3Hj-pUvnRpYf1c1O.XZhEiUFRWiq-O6aAgetQ9g'
 
     const packages = [
       'dynamodb',
@@ -78,7 +80,7 @@ export class CdkConstructsStack extends Stack {
               // `export NPM_REGISTRY=\`aws codeartifact get-repository-endpoint --domain "${artifactDomain.domainName}" --domain-owner "${AWS_ACCOUNT_ID}" --repository "${artifactRepo.repositoryName}" --format npm --query repositoryEndpoint --output text | sed s~^https://~~\``,
               // 'npm login',
               `npm config set registry=https://diegotrs-constructs-760178732320.d.codeartifact.us-east-2.amazonaws.com/npm/cdk-constructs/`,
-              `npm config set //diegotrs-constructs-760178732320.d.codeartifact.us-east-2.amazonaws.com/npm/cdk-constructs/:_authToken=${process.env.NPM_TOKEN}`,
+              `npm config set //diegotrs-constructs-760178732320.d.codeartifact.us-east-2.amazonaws.com/npm/cdk-constructs/:_authToken=${NPM_TOKEN}`,
               ``,
               // 'ls',
 
@@ -89,16 +91,16 @@ export class CdkConstructsStack extends Stack {
               'cd ../graphql',
               'npm version patch',
               'npm publish',
-              
+
               'cd ../rest-api',
               'npm version patch',
               'npm publish',
-              
+
               'cd ../webapp',
               'npm version patch',
               'npm publish',
-              
-              
+
+
               'cd ../pipeline',
               'npm version patch',
               'npm publish',
