@@ -28,7 +28,7 @@ export class CdkConstructsStack extends Stack {
 
     // [x] create artifact repo.
     const artifactRepo = pipe.createArtifactRepository(artifactDomain.domainName, 'cdk-constructs', [
-      'aws-cdk-lib',
+      // 'aws-cdk-lib',
     ])
     artifactRepo.addDependsOn(artifactDomain)
 
