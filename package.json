@@ -8,6 +8,7 @@
     "build": "echo \"don't\"",
     "watch": "tsc -w",
     "test": "jest",
+    "update-versions-and-push": ". .\\update-versions.ps1 ; git commit -am \"npm token\"; git push aws main",
     "guard-rest": "cfn-guard validate -d ./cdk.out/full-demo.template.json -r ./lib/rest-api/api-builder.rule",
     "guard-table": "cfn-guard validate -d ./cdk.out/full-demo.template.json -r ./lib/dynamodb/dynamo-construct.rule",
     "cdk": "cdk"
