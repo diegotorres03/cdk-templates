@@ -98,6 +98,11 @@ export class CdkConstructsStack extends Stack {
               'npm version patch',
               'npm publish',
               
+              
+              'cd ../pipeline',
+              'npm version patch',
+              'npm publish',
+
               'echo "this can be the cfn-guard step, just use before the other"',
             ]
           }
