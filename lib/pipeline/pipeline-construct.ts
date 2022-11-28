@@ -63,6 +63,7 @@ export class PipeConstruct extends Construct {
             domainName,
             repositoryName,
             upstreams,
+            externalConnections: ['public:npmjs'],
         })
         return artifactRepo
     }
