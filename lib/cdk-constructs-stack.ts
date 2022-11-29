@@ -69,6 +69,7 @@ export class CdkConstructsStack extends Stack {
         phases: {
           pre_build: {
             commands: [
+              'npm i -g typescript',
               // `aws codeartifact login --tool npm --domain ${artifactDomain.domainName} --repository ${artifactRepo.repositoryName}`
             ]
           },
