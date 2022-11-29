@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ESNext",
     "module": "commonjs",
     "moduleResolution": "node",
     "lib": [
       "es2018"
     ],
+    "types": [
+      "node"
+    ],
+    "outDir": "dist",
     "declaration": true,
     "strict": true,
     "noImplicitAny": false,
@@ -24,8 +28,12 @@
       "./node_modules/@types"
     ]
   },
+  "include": [
+    "src/**/*",
+    "index.ts",
+  ],
   "exclude": [
     "node_modules",
-    "cdk.out"
+    "dist"
   ]
 }
