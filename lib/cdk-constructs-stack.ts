@@ -99,6 +99,7 @@ export class CdkConstructsStack extends Stack {
               'npm publish',
 
               'cd ../webapp',
+              'npm run build',
               'npm version patch',
               'npm publish',
 
