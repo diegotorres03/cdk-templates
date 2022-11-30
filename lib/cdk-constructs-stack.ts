@@ -85,7 +85,6 @@ export class CdkConstructsStack extends Stack {
               `npm config set registry=https://diegotrs-constructs-760178732320.d.codeartifact.us-east-2.amazonaws.com/npm/cdk-constructs/`,
               `npm config set //diegotrs-constructs-760178732320.d.codeartifact.us-east-2.amazonaws.com/npm/cdk-constructs/:_authToken=${NPM_TOKEN}`,
               ``,
-              // 'ls',
 
               'cd lib/dynamodb',
               'npm version patch',
@@ -99,6 +98,7 @@ export class CdkConstructsStack extends Stack {
               'npm version patch',
               'npm publish',
 
+              'ls',
               'cd ../webapp',
               'npm run build',
               'npm version patch',
