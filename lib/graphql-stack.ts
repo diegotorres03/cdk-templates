@@ -12,7 +12,7 @@ import {
 import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-import { GraphQLConstruct } from './graphql/graphql-builder-construct'
+import { GraphQLConstruct } from './graphql'
 
 
 // const output = 

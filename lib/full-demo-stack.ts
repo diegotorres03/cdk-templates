@@ -15,8 +15,8 @@ import { Construct } from 'constructs'
 
 import { GraphQLConstruct } from './graphql/graphql-builder-construct'
 import { DynamoCostruct } from './dynamodb/dynamo-construct'
-import { ApiBuilderConstruct } from './rest-api/api-builder-construct'
-import { WebAppConstruct } from './webapp/webapp-construct'
+import { ApiBuilderConstruct } from './rest-api/src/api-builder-construct'
+// import { WebAppConstruct } from './webapp/webapp-construct'
 import { ApiGateway } from 'aws-cdk-lib/aws-events-targets'
 
 // const output = 

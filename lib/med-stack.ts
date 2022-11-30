@@ -3,8 +3,8 @@ import {
 } from 'aws-cdk-lib'
 
 import { Construct } from 'constructs'
-import { DynamoCostruct } from '../lib/dynamodb/dynamo-construct'
-import { GraphQLConstruct } from '../lib/graphql/graphql-builder-construct'
+import { DynamoCostruct } from '../lib/dynamodb'
+import { GraphQLConstruct } from '../lib/graphql'
 
 export class MedStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {

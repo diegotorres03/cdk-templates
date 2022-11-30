@@ -7,7 +7,7 @@ import {
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-import { PipeConstruct } from './pipeline/dist/index'
+import { PipeConstruct } from './pipeline'
 // import { PipeConstruct } from './pipeline/src/pipeline-construct'
 const { log } = console
 

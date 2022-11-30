@@ -12,7 +12,7 @@ import { promises as fs } from 'fs'
 
 import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs'
-import { ApiBuilderConstruct } from './rest-api/api-builder-construct'
+import { ApiBuilderConstruct } from './rest-api/src/api-builder-construct'
 import { WebAppStack, WebappProps } from './webapp-stack'
 
 

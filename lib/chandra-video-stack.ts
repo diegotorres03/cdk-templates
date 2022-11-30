@@ -13,7 +13,7 @@ import {
 import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-import { WebAppConstruct } from './webapp/webapp-construct'
+import { WebAppConstruct } from './webapp'
 
 // const responseHeaders = {
 //     "Content-Type": "application/json",
