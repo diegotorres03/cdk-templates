@@ -7,7 +7,7 @@ import {
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-import { PipeConstruct } from './pipeline/pipeline-construct'
+import { PipeConstruct } from './pipeline/src/pipeline-construct'
 const { log } = console
 
 
@@ -30,6 +30,7 @@ export class CdkConstructsStack extends Stack {
     const artifactRepo = pipe.createArtifactRepository(artifactDomain.domainName, 'cdk-constructs', [
       // 'aws-cdk-lib',
     ])
+
     artifactRepo.addDependsOn(artifactDomain)
 
     const NPM_TOKEN = 'eyJ2ZXIiOjEsImlzdSI6MTY2OTgyMjgzMCwiZW5jIjoiQTEyOEdDTSIsInRhZyI6ImdoT2Vwekt0T0hYM3JZb0VqMGN3N2ciLCJleHAiOjE2Njk4NjYwMzAsImFsZyI6IkExMjhHQ01LVyIsIml2IjoiQXJiNFFLMllTRG40LWtoSSJ9.flg2DJBhGHOjs4j5PpkAPg.gUE0zgkt1sj8G3Gz.JsEAJN0GjSQsDcKksghu99lqgkLwHOs0-J9PYrvxVoJrA10imGrap6XpwAavR9att_i6bGGvGhBYbUyOVHdj-7dXqSayj6RGf8e7Xpm2CaPtCLpHHUqu5VMe2aNED9ZehgC5fwZDIibX2wlwczi8KFeTsOWIMFR1qO1QdFiAg4ZyD-ECMDKEMKqW26CSUG_tSsl_Km4OL8Bd984mRCpuaTywz26lz7R95Y5BpVIyY95maySJd_1StyqIhEGQGFTSGFsVvr2ASvBI74PzpdK2EDQCnw5Zv0Z-x5MIxsNQMBDw_-hCzsD0EWYl-y5e5nlEmPyQ4WOpb8pq5I-qXI-u4YICDtxZMnoBjYvs3rapgWSURbf3Iv7VYpnLGwOHRPVN9FEM1Xk1dObmP9N1MTwJO3wLeZn5RffT7eYaw3QFEV4iGmvliyXkDaBcVsDMaA_aEhp4v1R2GfPgS3vLd5w0HpnQghqtu4hrMJcVL68pOy7X3EoybGuTuclrJQHkoSKkHPIzhfCII8eZC5z1ZfxYjAcT0c_sgBthYdUpIZLQaHZYcXRNnzxKRgMjunuH28a6GyDDviglOQD9zB7KYXtOLCGdToe6JQZJp6kEVSkh2wJBa_fS6iJn3aJ4jMPF1qz8ueavPPuPO6m9kFQjn9CfAkhKCxNa4506JWgcnF5CROm4-6NZ7AHD9xAwKsq5xkxIw7OtiP7L657Zyk4Q0QTtBWjMC6JaQUGicG9vFmHa1X9W8U1PwJa-v8xzQGgQF5CeZGKRrM0ljXFr1D0G6I_Ref-gzIMI7lpdNgDNp03eJ3SiGjIEEYtE6w-FfGRMThK6NTtWIGQtAM4lleqlfrrgtSy3VyKwbpVR8XQ8HTWmSedDaZJtaay48Ejcc5XmGQRwHAf-uUaDVHSBTYrHONsF.iG4lqCbvVMDFeg0W9wgGxg'

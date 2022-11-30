@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { error } from 'console';
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { PipeConstruct } from './pipeline/pipeline-construct'
+import { PipeConstruct } from './pipeline/src/pipeline-construct'
 
 export class PipelineTestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {

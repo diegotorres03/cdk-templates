@@ -20,7 +20,7 @@ import { Construct } from 'constructs'
 
 import { WebAppConstruct } from './webapp/webapp-construct'
 // import { PipeConstruct } from './pipeline/pipe-construct'
-import { PipeConstruct } from './pipeline/pipeline-construct'
+import { PipeConstruct } from './pipeline/src/pipeline-construct'
 import { error } from 'console'
 import { CodeBuild } from 'aws-sdk'
 
