@@ -1,6 +1,6 @@
 {
   "name": "pipeline",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/**/*.d.ts",
@@ -14,5 +14,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Diego Torres",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.11.9"
+  }
 }
