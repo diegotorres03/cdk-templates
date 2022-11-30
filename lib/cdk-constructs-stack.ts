@@ -98,16 +98,16 @@ export class CdkConstructsStack extends Stack {
 
               'cd ../rest-api',
               'npm publish',
+              
+              'cd ../pipeline',
+              'npm run build',
+              'npm publish',
 
               'cd ../webapp',
               'ls',
               'npm run build',
               'npm publish',
-              
-              
-              'cd ../pipeline',
-              'npm run build',
-              'npm publish',
+        
 
               'echo "this can be the cfn-guard step, just use before the other"',
             ]
