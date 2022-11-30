@@ -71,7 +71,7 @@ export class CdkConstructsStack extends Stack {
         phases: {
           pre_build: {
             commands: [
-              'npm i -g typescript',
+              'npm i --location=global typescript',
               // `aws codeartifact login --tool npm --domain ${artifactDomain.domainName} --repository ${artifactRepo.repositoryName}`
             ]
           },
@@ -89,22 +89,28 @@ export class CdkConstructsStack extends Stack {
               ``,
 
               'cd lib/dynamodb',
+              'npm i',
               'npm run build',
               'npm publish',
 
               'cd ../graphql',
+              'npm i',
               'npm run build',
               'npm publish',
 
               'cd ../rest-api',
+              'npm i',
+              'npm run build',
               'npm publish',
               
               'cd ../pipeline',
+              'npm i',
               'npm run build',
               'npm publish',
 
               'cd ../webapp',
               'ls',
+              'npm i',
               'npm run build',
               'npm publish',
         
