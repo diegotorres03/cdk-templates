@@ -1,6 +1,6 @@
 {
   "name": "pipeline",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/**/*.d.ts",
@@ -16,7 +16,7 @@
   "author": "Diego Torres",
   "license": "ISC",
   "peerDependencies": {
-    "aws-cdk-lib": "2.37.1",
+    "aws-cdk-lib": "^2.37.1",
     "constructs": "^10.0.0"
   },
   "devDependencies": {
