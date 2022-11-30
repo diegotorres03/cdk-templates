@@ -1,6 +1,6 @@
 {
   "name": "webapp",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/**/*.d.ts",
@@ -15,6 +15,10 @@
   },
   "author": "Diego Torres",
   "license": "ISC",
+  "peerDependencies": {
+    "aws-cdk-lib": "2.37.1",
+    "constructs": "^10.0.0"
+  },
   "devDependencies": {
     "@types/node": "^18.11.9"
   }
