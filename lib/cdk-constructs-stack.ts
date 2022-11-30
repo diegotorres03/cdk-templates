@@ -89,9 +89,11 @@ export class CdkConstructsStack extends Stack {
               ``,
 
               'cd lib/dynamodb',
+              'npm run build',
               'npm publish',
 
               'cd ../graphql',
+              'npm run build',
               'npm publish',
 
               'cd ../rest-api',

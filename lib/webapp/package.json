@@ -1,6 +1,6 @@
 {
   "name": "webapp",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/**/*.d.ts",
@@ -14,5 +14,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Diego Torres",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.11.9"
+  }
 }
