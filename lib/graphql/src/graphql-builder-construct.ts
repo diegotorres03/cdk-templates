@@ -152,7 +152,7 @@ export class GraphQLConstruct extends Construct {
 
     new CfnOutput(this, `gql-api-id`, { value: this.api.attrApiId })
     new CfnOutput(this, `gql-api-url`, { value: this.api.attrGraphQlUrl })
-
+    return this
   }
 
   /**

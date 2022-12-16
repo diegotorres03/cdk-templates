@@ -1,0 +1,38 @@
+{
+    "version": "0.2",
+    "env": {
+        "shell": "bash",
+        "git-credential-helper": "yes"
+    },
+    "phases": {
+        "install": {
+            "runtime-versions": {
+                "python": "3.10",
+                "nodejs": "16",
+                "java": "corretto17",
+                "dotnet": "6.0"
+            },
+            "commands": [
+                "if [ \"$BUILD_TYPE\" == \"RELEASE\" ]; then git checkout \"${DEFAULT_BRANCH_NAME}\" ; fi",
+                "npm install --location=global projen yarn",
+                "cd \"constructs/${PACKAGE_SCOPE}/${PACKAGE_NAME}\"",
+                "yarn install --check-files",
+                "git config --global user.email \"automation@example.com\"",
+                "git config --global user.name \"CodeBuild Automation\""
+            ]
+        },
+        "build": {
+            "commands": [
+                ""
+            ]
+        }
+    },
+    "reports": {
+        "test-reports": {
+            "files": [
+                "**/test-reports/junit.xml"
+            ],
+            "file-format": "JUNITXML"
+        }
+    }
+}

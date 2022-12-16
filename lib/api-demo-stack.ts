@@ -46,6 +46,9 @@ export class ApiStack extends Stack {
 
         // api.post('/data', 's3://path.to.bucket/function/handler', options)
 
+
+        // api.import('./swagger')
+
         api.post('/data',
             function () {
                 // post to dynamo

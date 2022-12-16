@@ -43,7 +43,7 @@ export class DynamoCostruct extends Construct {
                 name: partitionKey,
                 type: STRING
             },
-            sortKey: sortKey ? ({ name: sortKey, type: STRING}) : undefined 
+            sortKey: sortKey ? ({ name: sortKey, type: STRING }) : undefined
         } as Dynamo.TableProps
 
         this.table = new Dynamo.Table(this, 'testTable', this.params)
@@ -52,6 +52,7 @@ export class DynamoCostruct extends Construct {
             value: this.table.tableName,
             // exportName: 'tableName'
         })
+        return this
     }
 
     end() {
@@ -61,10 +62,12 @@ export class DynamoCostruct extends Construct {
     }
 
     addIndex() {
+        return this
         throw new Error(unimplementedError)
     }
 
     addDax() {
+        return this
         throw new Error(unimplementedError)
     }
 
@@ -103,6 +106,7 @@ export class DynamoCostruct extends Construct {
             // exportName: 'daxClusterEndpointUrl'
         })
 
+        return this
     }
 
     addStreamHandler(scope: string | string[], code: Function | string, options: any) {
@@ -110,6 +114,14 @@ export class DynamoCostruct extends Construct {
         // [ ] enable streams if not enabled already
         // [ ] create lambda
         // [ ] set lambda as handler for dynamo
+    }
+
+    on(eventName) {
+        // 
+        const fn = (code, options?) => {
+            this.addStreamHandler(eventName, code, options)
+        }
+        return { fn }
     }
 
 }

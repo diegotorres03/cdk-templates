@@ -59,11 +59,12 @@ export class PipeConstruct extends Construct {
     }
 
     createArtifactRepository(domainName: string, repositoryName: string, upstreams?: string[]) {
+
         const artifactRepo = new CodeArtifact.CfnRepository(this, 'artifact-repo', {
             domainName,
             repositoryName,
-            // upstreams,
-            // externalConnections: ['public:npmjs'],
+            upstreams,
+            externalConnections: ['public:npmjs'],
         })
         return artifactRepo
     }

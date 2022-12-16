@@ -39,6 +39,7 @@ export class FunctionConstruct extends Construct {
 
     layers: Map<string, Lambda.LayerVersion> = new Map()
     layersToUse: Set<Lambda.LayerVersion> = new Set()
+    lambda: Lambda.Function
 
     constructor(scope: Construct, id: string) {
         super(scope, id)
@@ -104,7 +105,7 @@ export class FunctionConstruct extends Construct {
         if (options && Array.isArray(options.access)) {
             options.access.forEach(fn => fn(lambda))
         }
-
+        this.lambda = lambda
         return lambda
     }
 

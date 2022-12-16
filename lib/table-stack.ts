@@ -11,7 +11,7 @@ import {
 } from 'aws-cdk-lib'
 
 import { ApiBuilderConstruct } from './rest-api/src/api-builder-construct'
-import { DynamoCostruct } from './dynamodb/dynamo-construct'
+import { DynamoCostruct } from './dynamodb'
 
 
 import { Construct } from 'constructs'

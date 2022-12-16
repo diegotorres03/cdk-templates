@@ -13,9 +13,9 @@ import {
 import { Construct } from 'constructs'
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-import { GraphQLConstruct } from './graphql/graphql-builder-construct'
-import { DynamoCostruct } from './dynamodb/dynamo-construct'
-import { ApiBuilderConstruct } from './rest-api/src/api-builder-construct'
+import { GraphQLConstruct } from './graphql'
+import { DynamoCostruct } from './dynamodb'
+import { ApiBuilderConstruct } from './rest-api'
 // import { WebAppConstruct } from './webapp/webapp-construct'
 import { ApiGateway } from 'aws-cdk-lib/aws-events-targets'
 
@@ -52,6 +52,7 @@ export class FullDemoStack extends Stack {
         
         // const swaggerFile = {}
         // api.createApi(swaggerFile)
+
 
         const daxLayer = apiBuilder.createLayer('full-demo-node_modules', './layers/dax')
 

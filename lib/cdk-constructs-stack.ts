@@ -3,6 +3,7 @@ import {
   StackProps,
   aws_iam as IAM,
   aws_codebuild as CodeBuild,
+  CfnOutput,
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -31,6 +32,9 @@ export class CdkConstructsStack extends Stack {
     const artifactRepo = pipe.createArtifactRepository(artifactDomain.domainName, 'cdk-constructs', [
       // 'aws-cdk-lib',
     ])
+
+  
+    
 
     artifactRepo.addDependsOn(artifactDomain)
 

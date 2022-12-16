@@ -12,6 +12,7 @@ import { ChandraDemoStack } from '../lib/chandra-video-stack'
 import { MedStack } from '../lib/med-stack'
 import { PipelineTestStack } from '../lib/pipeline-test-stack'
 import { CdkConstructsStack } from '../lib/cdk-constructs-stack'
+import { CDKPipelineTestStack } from '../lib/cdk-pipelines-stack'
 
 ////////////////////////////////////////////////////////////
 
@@ -27,6 +28,8 @@ const env = {
 // [ ] move the other stacks away so this repo is just the base
 new CdkConstructsStack(app, 'cdk-constructs', { env })
 
+
+new CDKPipelineTestStack(app, 'cdk-pipelines', { env })
 
 
 // const defaultVpc = cdk.aws_ec2.Vpc.fromLookup(app, 'default-vpc', { vpcId: 'vpc-9cb3d0f7', region: 'us-east-2' })

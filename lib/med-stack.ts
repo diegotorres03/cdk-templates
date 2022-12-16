@@ -19,7 +19,8 @@ export class MedStack extends Stack {
 
         gql.createApi('med-api', './graphql/med.schema.gql')
 
-        gql.mutation('createPatient')
+        gql
+            .mutation('createPatient')
             .fn(async function (event) {
                 const aws = require('aws-sdk')
                 const dynamo = new aws.DynamoDB.DocumentClient()
@@ -40,7 +41,8 @@ export class MedStack extends Stack {
             })
             .end()
 
-        gql.query('getPatient')
+        gql
+            .query('getPatient')
             .fn(async function (event) {
                 const aws = require('aws-sdk')
                 const dynamo = new aws.DynamoDB.DocumentClient()

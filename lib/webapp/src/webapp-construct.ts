@@ -92,7 +92,7 @@ export class WebAppConstruct extends Construct {
             destinationBucket: this.webappBucket,
             destinationKeyPrefix: destinationPath ? destinationPath : undefined,
         })
-        return webappDeployment
+        return this
     }
 
     run(path:string, commands: string | string[]) {
@@ -108,6 +108,7 @@ export class WebAppConstruct extends Construct {
         }
         log('111111111111111111111111111111111111111111111111111111111')
         log('111111111111111111111111111111111111111111111111111111111')
+        return this    
     }
 
 }
